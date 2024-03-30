@@ -12,7 +12,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         ("Permissions", {"fields": ("is_staff", "is_active", "groups", "user_permissions")}),
-        ("Orders", {"fields": ("cart",)}),
+        ("Orders", {"fields": ("cart", "favorites")}),
     )
     add_fieldsets = (
         (None, {

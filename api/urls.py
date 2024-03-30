@@ -17,7 +17,8 @@ Including another URLconf
 from django.conf.urls.static import static
 from .views import *
 from .users_views import *
-from django.urls import path
+from .admin_api import *
+from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
 from deal import settings
 
@@ -32,10 +33,17 @@ urlpatterns = [
     path('users/get/', GetUser.as_view(), name='api_user_get'),
     path('users/cart/', GetUserCart.as_view(), name='api_user_cart'),
     path('users/cart/order/', MakeOrder.as_view(), name='api_user_cart_order'),
+    path('users/orders/', GetUserOrders.as_view(), name='api_user_orders'),
+    path('users/favorites/', UserFavorites.as_view(), name='api_user_favorites'),
+    path('users/support/', UserSupportRequests.as_view(), name='api_user_support_requests'),
+    path('users/order/', GetUserOrder.as_view(), name='api_user_order'),
+    path('catalog/', GetCatalog.as_view(), name='api_catalog'),
     path('token/',
          jwt_views.TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
     path('token/refresh/',
          jwt_views.TokenRefreshView.as_view(),
-         name='token_refresh')
+         name='token_refresh'),
+    path('', include('chats.chat_api_urls')),
+    path('admin/product/', CreateProduct.as_view(), name='admin_create_product')
 ]

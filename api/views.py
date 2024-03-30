@@ -1,14 +1,18 @@
 import json
 
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from core.models import Product
+from core.models import Product, ProductTag
 
 from core.serializer import *
 from storage.models import StorageUnit
+
+UserModel = get_user_model()
 
 
 # Create your views here.
@@ -32,11 +36,30 @@ class GetProduct(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
+        userId = request.GET.get('uid', None)
+
+        if userId and userId.isdigit():
+            if UserModel.objects.filter(id=userId).exists():
+                user = UserModel.objects.get(id=userId)
+            else:
+                user = None
+        else:
+            user = None
+
         product_item = request.GET.get('item')
         avail = request.GET.get('avail')
         data = {}
         if Product.objects.filter(item=product_item).exists():
             product = Product.objects.get(item=product_item)
+            data['favorite'] = False
+
+            if user:
+                print("AUTHENTICATED")
+                if user.favorites.filter(id=product.id).exists():
+                    data['favorite'] = True
+            else:
+                print('NOT AUTHENTICATED')
+
             data['data'] = ProductSerializer(product).data
             data['ok'] = True
             if avail:
@@ -104,3 +127,37 @@ class AddProductToCart(APIView):
                     return Response(status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetCatalog(APIView):
+    def get(self, request):
+        filter_tags_raw = request.GET.get('filters', None)
+        if filter_tags_raw:
+            filter_tags = filter_tags_raw.split(',')
+            print("FILTERS APPLYING TAGS WITH", filter_tags)
+        else:
+            filter_tags = None
+            print("NO FILTERS APPLYING")
+
+        catalog = Product.objects.all()
+
+        if filter_tags:
+            for tagName in filter_tags:
+                print('FILTERING BY TAG', tagName)
+                # catalog = catalog.filter(tags__name__in=[tagName])
+                newCatalog = []
+                for product in catalog:
+                    pt = [t.name for t in product.tags.all()]
+                    if tagName in pt:
+                        newCatalog.append(product)
+                        print(f'{product} [{product.item}] passed with {pt}')
+                catalog = newCatalog
+                print(catalog)
+
+        data = []
+        for product in catalog:
+            data.append(ProductSerializer(product).data)
+
+        print(data)
+
+        return Response(data=data, status=status.HTTP_200_OK)

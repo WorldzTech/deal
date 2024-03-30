@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'users',
+    'chats'
 ]
 
 AUTH_USER_MODEL = 'users.DealUser'
