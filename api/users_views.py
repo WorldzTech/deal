@@ -151,7 +151,7 @@ class GetUserOrders(APIView):
 
     def get(self, request):
         user = request.user
-        orders = Order.objects.filter(user=user)
+        orders = Order.objects.filter(user=user).order_by('creation_date')[::-1]
 
         data = []
         for order in orders:
@@ -195,7 +195,7 @@ class UserSupportRequests(APIView):
     def get(self, request):
         user = request.user
 
-        requests = SupportRequest.objects.filter(user=user)
+        requests = SupportRequest.objects.filter(user=user).order_by('-date')
 
         data = []
 

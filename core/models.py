@@ -41,7 +41,6 @@ class Product(models.Model):
     tags = models.ManyToManyField(ProductTag, blank=True, null=True)
 
 
-
 class Order(models.Model):
     class OrderStatus(models.TextChoices):
         created = "created", "Created"
@@ -71,7 +70,8 @@ class SupportRequest(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.PROTECT, blank=True, null=True)
 
     def startChat(self):
-        chat = chatsUtils.start_chat(byUser=self.user, toUser=UserModel.objects.get(mobilePhone='1234'), title=self.topic)
+        chat = chatsUtils.start_chat(byUser=self.user, toUser=UserModel.objects.get(mobilePhone='1234'),
+                                     title=self.topic)
         chat.add_message(who=self.user, content=self.description)
         self.chat = chat
         self.save()

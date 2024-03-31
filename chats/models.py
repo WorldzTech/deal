@@ -10,6 +10,7 @@ class Chat(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
     p1 = models.ForeignKey(UserModel, on_delete=models.PROTECT, related_name='p1')
     p2 = models.ForeignKey(UserModel, on_delete=models.PROTECT, related_name='p2')
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     history = models.JSONField(default=dict)
 
