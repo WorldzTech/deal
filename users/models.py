@@ -52,7 +52,7 @@ class DealUser(AbstractBaseUser, PermissionsMixin):
 
     phoneConfirmed = models.BooleanField(default=False)
 
-    cart = models.JSONField(null=True, blank=True)
+    cart = models.JSONField(null=True, blank=True, default={})
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
