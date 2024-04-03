@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.contrib.auth import get_user_model
 from django.db import models
 import chats.utils as chatsUtils
@@ -51,7 +54,12 @@ class Order(models.Model):
 
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
 
+    supportChat = models.ForeignKey(Chat, on_delete=models.PROTECT, null=True)
+
+    innerId = models.CharField(max_length=7, null=True, blank=True)
+
     creation_date = models.DateTimeField(auto_now_add=True)
+    delivery_date = models.DateField(null=True, blank=True)
     delivered_date = models.DateTimeField(blank=True, null=True)
 
     status = models.CharField(choices=OrderStatus, max_length=20)
@@ -59,6 +67,27 @@ class Order(models.Model):
     products = models.JSONField(null=True, blank=True)
 
     totalPrice = models.FloatField(null=True, blank=True)
+
+    def create_support_chat(self):
+        admin = UserModel.objects.get(mobilePhone='1234')
+        chat = chatsUtils.start_chat(byUser=self.user, toUser=admin,
+                                     title="Заказ №" + self.innerId)
+        chat.add_message(who=admin, content=f'Здравствуйте! Ваш заказ №{self.innerId} создан! Мы обработаем его и запланируем дату доставки. Спасибо.')
+        self.supportChat = chat
+        self.save()
+
+    def generate_inner_id(self):
+        abc = string.digits
+        p1 = random.choices(abc, k=3)
+        p2 = random.choices(abc, k=3)
+        innerId = "-".join([p1, p2])
+        while Order.objects.filter(innerId=innerId).exists():
+            p1 = random.choices(abc, k=3)
+            p2 = random.choices(abc, k=3)
+            innerId = "-".join([p1, p2])
+
+        self.innerId = innerId
+        self.save()
 
 
 class SupportRequest(models.Model):

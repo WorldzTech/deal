@@ -138,7 +138,9 @@ class MakeOrder(APIView):
                 storageUnit.amount -= cart[item][size]['amount']
                 storageUnit.save()
 
-        Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart, totalPrice=totalPrice)
+        order = Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart, totalPrice=totalPrice)
+        order.generate_inner_id()
+        order.create_support_chat()
 
         user.cart = {}
         user.save()
