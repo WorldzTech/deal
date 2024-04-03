@@ -78,8 +78,9 @@ class Order(models.Model):
 
     def generate_inner_id(self):
         abc = string.digits
-        p1 = random.choices(abc, k=3)
-        p2 = random.choices(abc, k=3)
+        p1 = ''.join(random.choices(abc, k=3))
+        p2 = ''.join(random.choices(abc, k=3))
+        print([p1, p2])
         innerId = "-".join([p1, p2])
         while Order.objects.filter(innerId=innerId).exists():
             p1 = random.choices(abc, k=3)
