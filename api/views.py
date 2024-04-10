@@ -156,18 +156,19 @@ class GetCatalog(APIView):
                 catalog = newCatalog
                 print(catalog)
 
-            print('FILTERING BY SIZE')
             sizes = [x.split('_')[1] for x in filter_tags if 'size_' in x]
-            print(sizes)
 
-            newCatalog = []
+
             if len(sizes) > 0:
+                newCatalog = []
+                print('FILTERING BY SIZE')
+                print(sizes)
                 for product in catalog:
                     if StorageUnit.objects.filter(product=product, size__in=sizes, amount__gt=0).exists():
                         newCatalog.append(product)
 
-            catalog = newCatalog
-            print(catalog)
+                catalog = newCatalog
+                print(catalog)
 
         data = []
         for product in catalog:
