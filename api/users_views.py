@@ -1,6 +1,7 @@
 from django.contrib.auth import login, get_user_model
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -36,14 +37,17 @@ class LoginUser(APIView):
 
     def post(self, request):
         data = request.data
-        serializer = UserSigninSerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            try:
-                user = serializer.check_user(data)
-                login(request, user)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            except ValueError:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = UserSigninSerializer(data=data)
+            if serializer.is_valid(raise_exception=True):
+                try:
+                    user = serializer.check_user(data)
+                    login(request, user)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                except ValueError:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetUser(APIView):
