@@ -143,16 +143,30 @@ class GetCatalog(APIView):
 
         if filter_tags:
             for tagName in filter_tags:
+                newCatalog = []
                 print('FILTERING BY TAG', tagName)
                 # catalog = catalog.filter(tags__name__in=[tagName])
-                newCatalog = []
                 for product in catalog:
                     pt = [t.name for t in product.tags.all()]
                     if tagName in pt:
                         newCatalog.append(product)
                         print(f'{product} [{product.item}] passed with {pt}')
+                    elif 'size_' in tagName:
+                        newCatalog.append(product)
                 catalog = newCatalog
                 print(catalog)
+
+            print('FILTERING BY SIZE')
+            sizes = [x.split('_')[1] for x in filter_tags if 'size_' in x]
+            print(sizes)
+
+            newCatalog = []
+            for product in catalog:
+                if StorageUnit.objects.filter(product=product, size__in=sizes, amount__gt=0).exists():
+                    newCatalog.append(product)
+
+            catalog = newCatalog
+            print(catalog)
 
         data = []
         for product in catalog:
