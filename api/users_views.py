@@ -45,9 +45,9 @@ class LoginUser(APIView):
                     login(request, user)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 except ValueError:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"ok": "dickhead 2"}, status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as e:
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"ok": "dickhead"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetUser(APIView):
