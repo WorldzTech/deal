@@ -37,6 +37,9 @@ class LoginUser(APIView):
 
     def post(self, request):
         data = request.data
+        f = open('api_logs')
+        f.write(data)
+        f.close()
         try:
             serializer = UserSigninSerializer(data=data)
             if serializer.is_valid(raise_exception=True):
