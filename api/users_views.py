@@ -38,9 +38,12 @@ class LoginUser(APIView):
         data = request.data
         serializer = UserSigninSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
-            user = serializer.check_user(data)
-            login(request, user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            try:
+                user = serializer.check_user(data)
+                login(request, user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except ValueError:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetUser(APIView):
