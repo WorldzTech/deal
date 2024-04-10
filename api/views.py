@@ -161,9 +161,10 @@ class GetCatalog(APIView):
             print(sizes)
 
             newCatalog = []
-            for product in catalog:
-                if StorageUnit.objects.filter(product=product, size__in=sizes, amount__gt=0).exists():
-                    newCatalog.append(product)
+            if len(sizes) > 0:
+                for product in catalog:
+                    if StorageUnit.objects.filter(product=product, size__in=sizes, amount__gt=0).exists():
+                        newCatalog.append(product)
 
             catalog = newCatalog
             print(catalog)
