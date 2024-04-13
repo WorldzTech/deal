@@ -132,8 +132,8 @@ class AddProductToCart(APIView):
 class GetCatalog(APIView):
     def get(self, request):
         filter_tags_raw = request.GET.get('filters', None)
-        minPrice = request.GET.get('minPrice', 0)
-        maxPrice = request.GET.get('maxPrice', 10*10)
+        minPrice = float(request.GET.get('minPrice', 0))
+        maxPrice = float(request.GET.get('maxPrice', 10**10))
 
         if filter_tags_raw:
             filter_tags = filter_tags_raw.split(',')
@@ -175,6 +175,7 @@ class GetCatalog(APIView):
 
         newCatalog = []
         for product in catalog:
+            print(f"{minPrice} <= {product.price} <= {maxPrice}")
             if minPrice <= product.price <= maxPrice:
                 newCatalog.append(product)
 
