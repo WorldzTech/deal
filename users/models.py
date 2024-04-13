@@ -12,7 +12,7 @@ class UserManager(BaseUserManager):
     for authentication instead of usernames.
     """
 
-    def create_user(self, email, mobilePhone, password, firstname, **extra_fields):
+    def create_user(self, mobilePhone, password, firstname='Poop', email='None', **extra_fields):
         """
         Create and save a user with the given email and password.
         """
@@ -21,12 +21,12 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError("The email must be set")
         email = self.normalize_email(email)
-        user = self.model(mobilePhone=mobilePhone, email=email, firstname=firstname,**extra_fields)
+        user = self.model(mobilePhone=mobilePhone, email=email, firstname=firstname, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, mobilePhone, password, **extra_fields):
+    def create_superuser(self, mobilePhone, password, firstname='Poop', **extra_fields):
         """
         Create and save a SuperUser with the given email and password.
         """
@@ -38,7 +38,7 @@ class UserManager(BaseUserManager):
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
-        return self.create_user(mobilePhone, password, **extra_fields)
+        return self.create_user(mobilePhone=mobilePhone, password=password, firstname=firstname, **extra_fields)
 
 
 class DealUser(AbstractBaseUser, PermissionsMixin):
@@ -52,10 +52,12 @@ class DealUser(AbstractBaseUser, PermissionsMixin):
 
     phoneConfirmed = models.BooleanField(default=False)
 
-    cart = models.JSONField(null=True, blank=True)
+    cart = models.JSONField(null=True, blank=True, default={})
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+
+    favorites = models.ManyToManyField('core.Product', blank=True, null=True)
 
     USERNAME_FIELD = 'mobilePhone'
     REQUIRED_FIELDS = []
