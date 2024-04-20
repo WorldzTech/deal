@@ -14,6 +14,8 @@ from users.serializers import UserSignupSerializer, UserSigninSerializer, UserSe
 
 from storage.serializers import StorageSerializer
 
+user_model = get_user_model()
+
 
 class UserRegister(APIView):
     permission_classes = (AllowAny,)
@@ -32,25 +34,26 @@ class UserRegister(APIView):
 
 
 class LoginUser(APIView):
-    permission_classes = (AllowAny,)
-    authentication_classes = (SessionAuthentication,)
-
     def post(self, request):
-        data = request.data
-        f = open('api_logs')
-        f.write(data)
-        f.close()
-        try:
-            serializer = UserSigninSerializer(data=data)
-            if serializer.is_valid(raise_exception=True):
-                try:
-                    user = serializer.check_user(data)
-                    login(request, user)
-                    return Response(serializer.data, status=status.HTTP_200_OK)
-                except ValueError:
-                    return Response({"ok": "dickhead 2"}, status=status.HTTP_400_BAD_REQUEST)
-        except ValidationError as e:
-            return Response({"ok": "dickhead"}, status=status.HTTP_400_BAD_REQUEST)
+        username = request.data['username']
+        password = request.data['password']
+
+        user = user_model.objects.filter(mobilePhone=username).first()
+        print(f"LOGIN AS {user}")
+
+        if user is None:
+            return Response({'message': 'Пользователь не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+        if not user.check_password(password):
+            return Response({'message': 'Неверный пароль'}, status=status.HTTP_400_BAD_REQUEST)
+
+        refresh = RefreshToken.for_user(user)
+        token = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'isAdmin': user.is_staff
+        }
+        return Response(token)
 
 
 class GetUser(APIView):
