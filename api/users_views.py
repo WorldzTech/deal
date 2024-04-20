@@ -39,6 +39,7 @@ class LoginUser(APIView):
         password = request.data['password']
 
         user = user_model.objects.filter(mobilePhone=username).first()
+        print(f"LOGIN AS {user}")
 
         if user is None:
             return Response({'message': 'Пользователь не найден'}, status=status.HTTP_404_NOT_FOUND)
