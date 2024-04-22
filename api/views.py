@@ -61,6 +61,7 @@ class GetProduct(APIView):
                 print('NOT AUTHENTICATED')
 
             data['data'] = ProductSerializer(product).data
+            data['data']['rowtags'] = ','.join([x['name'] for x in ProductSerializer(product).data['tags']])
             data['ok'] = True
             if avail:
                 availables = StorageUnit.objects.filter(product=product)

@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls.static import static
+
+from . import admin_api, admin_api_urls
 from .views import *
 from .users_views import *
 from .admin_api import *
@@ -45,5 +47,5 @@ urlpatterns = [
          jwt_views.TokenRefreshView.as_view(),
          name='token_refresh'),
     path('', include('chats.chat_api_urls')),
-    path('admin/product/', CreateProduct.as_view(), name='admin_create_product')
+    path('admin/', include('api.admin_api_urls'), name='admin_api'),
 ]

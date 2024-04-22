@@ -6,10 +6,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import ProductPhoto, ProductTag, Product
+from core.forms import EditProductForm
 
 
 class CreateProduct(APIView):
-
     def post(self, request):
         name = request.data['name']
         price = int(request.data['price'])
@@ -31,7 +31,8 @@ class CreateProduct(APIView):
         while Product.objects.filter(item=item).exists():
             item = ''.join([random.choice(string.digits) for x in range(8)])
 
-        product = Product.objects.create(title=name, item=item, price=price, shortDescription=short_description, description=description)
+        product = Product.objects.create(title=name, item=item, price=price, shortDescription=short_description,
+                                         description=description)
 
         product.photos.add(image)
 
@@ -41,3 +42,11 @@ class CreateProduct(APIView):
         product.save()
 
         return Response({'item': item}, status=status.HTTP_201_CREATED)
+
+
+class GetProductModelFields(APIView):
+    def get(self, request):
+        fields = {}
+        for k in EditProductForm.__dict__['base_fields'].keys():
+            fields[k] = str(EditProductForm.__dict__['base_fields'][k])
+        return Response({"html": EditProductForm().__html__()})
