@@ -26,3 +26,10 @@ class SupportRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportRequest
         fields = '__all__'
+
+
+class DetailedSupportRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SupportRequest
+        fields = '__all__'
+        depth = 3
