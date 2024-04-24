@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from chats.models import Chat
-from core.models import ProductPhoto, ProductTag, Product, SupportRequest
+from core.models import ProductPhoto, ProductTag, Product, SupportRequest, ProductTagGroup
 from core.forms import EditProductForm
 from core.serializer import SupportRequestSerializer, DetailedSupportRequestSerializer
 
@@ -140,3 +140,19 @@ class GetProductModelFields(APIView):
         for k in EditProductForm.__dict__['base_fields'].keys():
             fields[k] = str(EditProductForm.__dict__['base_fields'][k])
         return Response({"html": EditProductForm().__html__()})
+
+
+class SwitchTagGroupsEndpoint(APIView):
+    def post(self, request):
+        tagId = request.data['tagId']
+        groupId = request.data['groupId']
+
+        tagsGroup = ProductTagGroup.objects.filter(id=groupId).first()
+        tag = ProductTag.objects.get(id=tagId)
+
+        if tag in tagsGroup.tags.all():
+            tagsGroup.tags.remove(tag)
+        else:
+            tagsGroup.tags.add(tag)
+
+        return Response(status=status.HTTP_200_OK)

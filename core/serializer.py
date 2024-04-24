@@ -1,6 +1,7 @@
+from pip._vendor.rich.markup import Tag
 from rest_framework import serializers
 
-from core.models import BlogPost, Product, Order, SupportRequest
+from core.models import BlogPost, Product, Order, SupportRequest, ProductTagGroup
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
@@ -33,3 +34,10 @@ class DetailedSupportRequestSerializer(serializers.ModelSerializer):
         model = SupportRequest
         fields = '__all__'
         depth = 3
+
+
+class TagGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductTagGroup
+        fields = '__all__'
+        depth = 2

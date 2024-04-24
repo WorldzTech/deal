@@ -30,4 +30,5 @@ urlpatterns = [
     path('supportrequests/details', SupportRequestDetailsEndpoint.as_view(), name='admin_requests_details'),
     path('supportrequests/sendmessage', SendMessageViaSupportAccountEndpoint.as_view(), name='admin_requests_sendmessage'),
     path('supportrequests/close', CloseSupportRequestEndpoint.as_view(), name='admin_requests_close'),
+    path('tags/groups/switch', SwitchTagGroupsEndpoint.as_view(), name='admin_tags_groups_switch'),
 ]

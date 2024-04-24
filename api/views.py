@@ -134,7 +134,7 @@ class GetCatalog(APIView):
     def get(self, request):
         filter_tags_raw = request.GET.get('filters', None)
         minPrice = float(request.GET.get('minPrice', 0))
-        maxPrice = float(request.GET.get('maxPrice', 10**10))
+        maxPrice = float(request.GET.get('maxPrice', 10 ** 10))
 
         if filter_tags_raw:
             filter_tags = filter_tags_raw.split(',')
@@ -162,7 +162,6 @@ class GetCatalog(APIView):
 
             sizes = [x.split('_')[1] for x in filter_tags if 'size_' in x]
 
-
             if len(sizes) > 0:
                 newCatalog = []
                 print('FILTERING BY SIZE')
@@ -189,3 +188,63 @@ class GetCatalog(APIView):
         print(data)
 
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class TagGroupsEndpoint(APIView):
+    def get(self, request):
+        gid = request.GET.get('id', None)
+        withIds = request.GET.get('wid', False)
+
+        if gid:
+            data = {}
+            tagGroups = ProductTagGroup.objects.all()
+            for tagGroup in tagGroups:
+                if int(gid) == tagGroup.id:
+                    data[tagGroup.name] = {}
+                    for tag in tagGroup.tags.all():
+                        data[tagGroup.name][tag.name.capitalize()] = tag.name
+        else:
+            data = {}
+            tagGroups = ProductTagGroup.objects.all()
+            for tagGroup in tagGroups:
+                if withIds:
+                    data[tagGroup.name] = {'id': tagGroup.id, 'body': {}}
+                else:
+                    data[tagGroup.name] = {}
+                for tag in tagGroup.tags.all():
+                    if withIds:
+                        data[tagGroup.name]['body'][tag.name.capitalize()] = tag.name
+                    else:
+                        data[tagGroup.name][tag.name.capitalize().replace('_', ' ')] = tag.name
+        return Response(data)
+
+    def post(self, request):
+        name = request.data.get('groupName', None)
+        if name and not ProductTagGroup.objects.filter(name=name).exists() and len(name.strip()) > 0:
+            ProductTagGroup.objects.create(name=name)
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        gid = request.GET.get('gid', None)
+        print(gid)
+
+        ProductTagGroup.objects.get(id=gid).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TagsEndpoint(APIView):
+    def get(self, request):
+        tags = ProductTag.objects.all()
+        data = []
+        for tag in tags:
+            data.append({'id': tag.id, 'name': tag.name})
+        return Response(data)
+
+    def post(self, request):
+        tagName = request.data.get('tagName').lower().replace(' ', '_')
+        if len(tagName.strip()) == 0 or ProductTag.objects.filter(name=tagName).exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        ProductTag.objects.create(name=tagName)
+        return Response(status=status.HTTP_201_CREATED)

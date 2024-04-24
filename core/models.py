@@ -21,6 +21,11 @@ class ProductPhoto(models.Model):
     image = models.ImageField(upload_to='products/')
 
 
+class ProductTagGroup(models.Model):
+    name = models.CharField(max_length=255)
+    tags = models.ManyToManyField('ProductTag')
+
+
 class ProductTag(models.Model):
     name = models.CharField(max_length=20)
 
@@ -72,7 +77,8 @@ class Order(models.Model):
         admin = UserModel.objects.get(mobilePhone='1234')
         chat = chatsUtils.start_chat(byUser=self.user, toUser=admin,
                                      title="Заказ №" + self.innerId)
-        chat.add_message(who=admin, content=f'Здравствуйте! Ваш заказ №{self.innerId} создан! Мы обработаем его и запланируем дату доставки. Спасибо.')
+        chat.add_message(who=admin,
+                         content=f'Здравствуйте! Ваш заказ №{self.innerId} создан! Мы обработаем его и запланируем дату доставки. Спасибо.')
         self.supportChat = chat
         self.save()
 
