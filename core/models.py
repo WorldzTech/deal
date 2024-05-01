@@ -111,3 +111,14 @@ class SupportRequest(models.Model):
         chat.add_message(who=self.user, content=self.description)
         self.chat = chat
         self.save()
+
+
+class ProductShowcase(models.Model):
+    name = models.CharField(max_length=255)
+    products = models.ManyToManyField(Product)
+
+    def __str__(self):
+        return self.name
+
+    def take_items(self):
+        return [x.item for x in self.products.all()]

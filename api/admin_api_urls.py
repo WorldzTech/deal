@@ -31,4 +31,7 @@ urlpatterns = [
     path('supportrequests/sendmessage', SendMessageViaSupportAccountEndpoint.as_view(), name='admin_requests_sendmessage'),
     path('supportrequests/close', CloseSupportRequestEndpoint.as_view(), name='admin_requests_close'),
     path('tags/groups/switch', SwitchTagGroupsEndpoint.as_view(), name='admin_tags_groups_switch'),
+    path('orders/', GetOrdersEndpoint.as_view(), name='admin_orders'),
+    path('orders/status', SetOrderStatusEndpoint.as_view(), name='admin_orders_status'),
+    path('storage/', StorageEndpoint.as_view(), name='admin_storage'),
 ]

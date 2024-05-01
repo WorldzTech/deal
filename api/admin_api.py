@@ -3,19 +3,27 @@ import string
 
 from django.contrib.auth import get_user_model
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from chats.models import Chat
-from core.models import ProductPhoto, ProductTag, Product, SupportRequest, ProductTagGroup
+from core.models import ProductPhoto, ProductTag, Product, SupportRequest, ProductTagGroup, Order
 from core.forms import EditProductForm
-from core.serializer import SupportRequestSerializer, DetailedSupportRequestSerializer
+from core.serializer import SupportRequestSerializer, DetailedSupportRequestSerializer, OrderSerializer
+from storage.models import StorageUnit
+from storage.serializers import StorageSerializer, DetailedStorageUnitSerializer
 
 UserModel = get_user_model()
 
 
 class ProductEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         name = request.data['name']
         price = int(request.data['price'])
         cover = request.data['cover']
@@ -49,6 +57,9 @@ class ProductEndpoint(APIView):
         return Response({'item': item}, status=status.HTTP_201_CREATED)
 
     def put(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         name = request.data.get('name', None)
         price = request.data.get('price', None)
         description = request.data.get('description', None)
@@ -95,7 +106,12 @@ class ProductEndpoint(APIView):
 
 
 class SupportRequestsEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         supportRequests = SupportRequest.objects.all()
         response_data = []
         for request in supportRequests:
@@ -104,13 +120,23 @@ class SupportRequestsEndpoint(APIView):
 
 
 class SupportRequestDetailsEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         support_request = SupportRequest.objects.filter(id=request.GET.get('id')).first()
         return Response(DetailedSupportRequestSerializer(support_request).data)
 
 
 class SendMessageViaSupportAccountEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         chatId = request.GET.get('cid')
         message = request.GET.get('message')
 
@@ -122,7 +148,12 @@ class SendMessageViaSupportAccountEndpoint(APIView):
 
 
 class CloseSupportRequestEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         id = request.data['cid']
         support_request: SupportRequest = SupportRequest.objects.filter(id=id).first()
         support_request.isActive = False
@@ -135,7 +166,12 @@ class CloseSupportRequestEndpoint(APIView):
 
 
 class GetProductModelFields(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         fields = {}
         for k in EditProductForm.__dict__['base_fields'].keys():
             fields[k] = str(EditProductForm.__dict__['base_fields'][k])
@@ -143,7 +179,12 @@ class GetProductModelFields(APIView):
 
 
 class SwitchTagGroupsEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         tagId = request.data['tagId']
         groupId = request.data['groupId']
 
@@ -156,3 +197,87 @@ class SwitchTagGroupsEndpoint(APIView):
             tagsGroup.tags.add(tag)
 
         return Response(status=status.HTTP_200_OK)
+
+
+class GetOrdersEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        oid = request.GET.get('oid', None)
+
+        if oid:
+            order = Order.objects.filter(id=oid).first()
+            return Response(OrderSerializer(order).data)
+        else:
+            orders = Order.objects.all()
+            response_data = []
+            for order in orders:
+                response_data.append(OrderSerializer(order).data)
+            return Response(response_data)
+
+
+class StorageEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        storageUnits = StorageUnit.objects.all()
+
+        data = []
+        for storageUnit in storageUnits:
+            data.append(DetailedStorageUnitSerializer(storageUnit).data)
+
+        return Response(data)
+
+    def post(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        itemOrTitle = request.data['iot']
+        size = request.data['size']
+        amount = request.data['amount']
+
+        print(amount, itemOrTitle, size)
+
+        if size:
+            product = Product.objects.filter(item=itemOrTitle).first()
+            if not product:
+                product = Product.objects.filter(title=itemOrTitle).first()
+
+            if product:
+                storageUnit = StorageUnit.objects.filter(product=product, size=size).first()
+                if not storageUnit:
+                    storageUnit = StorageUnit.objects.create(product=product, size=size, amount=0)
+                storageUnit.amount += int(amount)
+                storageUnit.save()
+
+                return Response(status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class SetOrderStatusEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        oid = request.data['oid']
+        st = request.data['status']
+
+        order = Order.objects.filter(id=oid).first()
+
+        if order:
+            order.status = st
+            order.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)

@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from core.models import Product, ProductTag
+from core.models import Product, ProductTag, ProductShowcase
 
 from core.serializer import *
 from storage.models import StorageUnit
@@ -248,3 +248,37 @@ class TagsEndpoint(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         ProductTag.objects.create(name=tagName)
         return Response(status=status.HTTP_201_CREATED)
+
+
+class ShowcaseEndpoint(APIView):
+    def get(self, request):
+        sid = request.GET.get('sid', None)
+
+        showcase = ProductShowcase.objects.filter(id=sid).first()
+
+        if showcase:
+            return Response(showcase.take_items())
+        else:
+            showcases = ProductShowcase.objects.all()
+
+            data = []
+            for showcase in showcases:
+                data.append(ShowcaseSerializer(showcase).data)
+
+            return Response(data)
+
+
+class SwitchShowcaseProductEndpoint(APIView):
+    def post(self, request):
+        showcaseId = request.data.get('sid', None)
+        productId = request.data.get('pid', None)
+
+        showcase = ProductShowcase.objects.filter(id=showcaseId).first()
+        product = Product.objects.filter(id=productId).first()
+
+        if product in showcase.products.all():
+            showcase.products.remove(product)
+        else:
+            showcase.products.add(product)
+
+        return Response(status=status.HTTP_200_OK)
