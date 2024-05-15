@@ -52,7 +52,7 @@ LOGGING = {
         },
         'DEAL': {
             'handlers': ['applogfile', ],
-            'level': 'ERROR',
+            'level': 'CRITICAL',
         },
     }
 }
