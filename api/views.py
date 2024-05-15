@@ -188,6 +188,7 @@ class GetCatalog(APIView):
 
         if newest:
             data.sort(key=lambda x: x['id'])
+            data = data[::-1]
 
         print(data)
 
