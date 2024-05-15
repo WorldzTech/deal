@@ -24,12 +24,18 @@ class ProductEndpoint(APIView):
         if not request.user.is_staff:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        print(request.data)
+
         name = request.data['name']
         price = int(request.data['price'])
-        cover = request.data['cover']
+        cover = request.data['photos[]']
         description = request.data['description']
         short_description = request.data['shortDescription']
         tags = request.data['tags']
+
+        print(cover)
+        print(cover)
+        print(cover)
 
         image = ProductPhoto.objects.create(image=cover)
         tagsList = []
