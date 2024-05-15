@@ -135,6 +135,7 @@ class GetCatalog(APIView):
         filter_tags_raw = request.GET.get('filters', None)
         minPrice = float(request.GET.get('minPrice', 0))
         maxPrice = float(request.GET.get('maxPrice', 10 ** 10))
+        newest = request.GET.get('newest', False)
 
         if filter_tags_raw:
             filter_tags = filter_tags_raw.split(',')
@@ -184,6 +185,9 @@ class GetCatalog(APIView):
         data = []
         for product in catalog:
             data.append(ProductSerializer(product).data)
+
+        if newest:
+            data.sort(key=lambda x: x['id'])
 
         print(data)
 
