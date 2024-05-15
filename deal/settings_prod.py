@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 SECRET_KEY = 'django-insecure-ub8r!xasdw@erf34xdvbdfc)nkxh(@cl2(m73_a#j7upav1qfh!vw'
@@ -34,13 +35,24 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'applogfile': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join('~', 'DEAL.err'),
+            'maxBytes': 1024 * 1024 * 15,  # 15MB
+            'backupCount': 10,
+        },
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        'DEAL': {
+            'handlers': ['applogfile', ],
+            'level': 'ERROR',
         },
     }
 }
