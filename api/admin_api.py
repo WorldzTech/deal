@@ -37,7 +37,7 @@ class ProductEndpoint(APIView):
         print(cover)
         print(cover)
 
-        image = ProductPhoto.objects.create(image=cover)
+
         tagsList = []
 
         for tag in tags.split(','):
@@ -53,7 +53,9 @@ class ProductEndpoint(APIView):
         product = Product.objects.create(title=name, item=item, price=price, shortDescription=short_description,
                                          description=description)
 
-        product.photos.add(image)
+        for f in request.FILES.getlist('photos[]'):
+            image = ProductPhoto.objects.create(image=cover)
+            product.photos.add(image)
 
         for tag in tagsList:
             product.tags.add(tag)
