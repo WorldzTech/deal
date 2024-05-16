@@ -82,7 +82,13 @@ class GetUserCart(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        cart = dict(request.user.cart)
+        cart = request.user.cart
+
+        if not cart:
+            request.user.cart = {}
+            request.user.save()
+
+        cart = request.user.cart
 
         print(cart)
 
