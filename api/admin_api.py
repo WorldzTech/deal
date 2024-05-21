@@ -54,7 +54,7 @@ class ProductEndpoint(APIView):
                                          description=description)
 
         for f in request.FILES.getlist('photos[]'):
-            image = ProductPhoto.objects.create(image=cover)
+            image = ProductPhoto.objects.create(image=f)
             product.photos.add(image)
 
         for tag in tagsList:
