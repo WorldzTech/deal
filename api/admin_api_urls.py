@@ -34,4 +34,5 @@ urlpatterns = [
     path('orders/', GetOrdersEndpoint.as_view(), name='admin_orders'),
     path('orders/status', SetOrderStatusEndpoint.as_view(), name='admin_orders_status'),
     path('storage/', StorageEndpoint.as_view(), name='admin_storage'),
+    path('storage/details/', StorageUnitDetailsEndpoint.as_view(), name='admin_storage_details'),
 ]

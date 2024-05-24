@@ -73,6 +73,8 @@ class Order(models.Model):
 
     totalPrice = models.FloatField(null=True, blank=True)
 
+    address = models.TextField(null=True, blank=True)
+
     def create_support_chat(self):
         admin = UserModel.objects.get(mobilePhone='1234')
         chat = chatsUtils.start_chat(byUser=self.user, toUser=admin,

@@ -37,7 +37,6 @@ class ProductEndpoint(APIView):
         print(cover)
         print(cover)
 
-
         tagsList = []
 
         for tag in tags.split(','):
@@ -122,8 +121,24 @@ class SupportRequestsEndpoint(APIView):
 
         supportRequests = SupportRequest.objects.all()
         response_data = []
-        for request in supportRequests:
-            response_data.append(SupportRequestSerializer(request).data)
+        for requestC in supportRequests:
+            response_data.append(SupportRequestSerializer(requestC).data)
+
+        sortBy = request.GET.get('sort', None)
+
+        if sortBy:
+            sortData = sortBy.split('_')
+            if sortData[0] == 'date':
+                response_data.sort(key=lambda x: x['date'])
+
+                if sortData[1] == 'inc':
+                    response_data = response_data[::-1]
+            elif sortData[0] == 'status':
+                response_data.sort(key=lambda x: x['isActive'])
+
+                if sortData[1] == 'inc':
+                    response_data = response_data[::-1]
+
         return Response(response_data)
 
 
@@ -135,6 +150,7 @@ class SupportRequestDetailsEndpoint(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         support_request = SupportRequest.objects.filter(id=request.GET.get('id')).first()
+
         return Response(DetailedSupportRequestSerializer(support_request).data)
 
 
@@ -234,11 +250,16 @@ class StorageEndpoint(APIView):
         if not request.user.is_staff:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        storageUnits = StorageUnit.objects.all()
+        data = {}
 
-        data = []
-        for storageUnit in storageUnits:
-            data.append(DetailedStorageUnitSerializer(storageUnit).data)
+        for storageUnit in StorageUnit.objects.all():
+            if storageUnit.product.title not in data.keys():
+                data[storageUnit.product.title] = {
+                    'sizes': [],
+                    'item': storageUnit.product.item
+                }
+
+            data[storageUnit.product.title]['sizes'].append(storageUnit.size)
 
         return Response(data)
 
@@ -289,3 +310,27 @@ class SetOrderStatusEndpoint(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class StorageUnitDetailsEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        item = request.GET.get('item')
+
+        product = Product.objects.get(item=item)
+
+        storageUnits = StorageUnit.objects.filter(product=product)
+
+        data = {
+            'title': product.title,
+            'storage': {}
+        }
+
+        for storageUnit in storageUnits:
+            data['storage'][storageUnit.size] = storageUnit.amount
+
+        return Response(data)

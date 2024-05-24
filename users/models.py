@@ -54,6 +54,10 @@ class DealUser(AbstractBaseUser, PermissionsMixin):
 
     cart = models.JSONField(null=True, blank=True, default={})
 
+    country = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    tg = models.CharField(max_length=255, null=True, blank=True)
+
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
