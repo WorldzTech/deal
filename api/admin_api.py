@@ -111,6 +111,18 @@ class ProductEndpoint(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
+    def delete(self, request):
+        if not request.user.is_staff:
+            print('//')
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        item = request.GET.get('item')
+
+        product = Product.objects.get(item=item)
+
+        product.delete()
+
+        return Response(status=status.HTTP_200_OK)
 
 class SupportRequestsEndpoint(APIView):
     permission_classes = (IsAuthenticated,)

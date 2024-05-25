@@ -25,7 +25,7 @@ from .admin_api import *
 
 urlpatterns = [
     path('models/fields/product', GetProductModelFields.as_view(), name='models_fields_product'),
-    path('product', ProductEndpoint.as_view(), name='create_product'),
+    path('product/', ProductEndpoint.as_view(), name='create_product'),
     path('supportrequests', SupportRequestsEndpoint.as_view(), name='admin_requests'),
     path('supportrequests/details', SupportRequestDetailsEndpoint.as_view(), name='admin_requests_details'),
     path('supportrequests/sendmessage', SendMessageViaSupportAccountEndpoint.as_view(), name='admin_requests_sendmessage'),
