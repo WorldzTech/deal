@@ -29,6 +29,7 @@ urlpatterns = [
     path('product/get/', GetProduct.as_view(), name='api_product_get'),
     path('product/search/', SearchProductByMask.as_view(), name='api_product_search'),
     path('product/cart/', AddProductToCart.as_view(), name='api_product_cart'),
+    path('product/cart/remove/', RemoveProductFromUserCart.as_view(), name='api_product_cart_remove'),
     path('users/signup/', UserRegister.as_view(), name='api_user_signup'),
     path('users/signin/', LoginUser.as_view(), name='api_user_signin'),
     path('users/logout/', LogoutUser.as_view(), name='api_user_logout'),

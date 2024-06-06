@@ -126,6 +126,9 @@ class MakeOrder(APIView):
         user = request.user
         cartData = request.data['cart']
         address = request.data['address']
+        mobilePhone = request.data['mobilePhone']
+        fullname = request.data['fullname']
+        email = request.data['email']
 
         cart = {}
 
@@ -158,7 +161,7 @@ class MakeOrder(APIView):
                 storageUnit.amount -= cart[item][size]['amount']
                 storageUnit.save()
 
-        order = Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart, totalPrice=totalPrice, address=address)
+        order = Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart, totalPrice=totalPrice, address=address, phoneNumber=mobilePhone, email=email, receiverFullname=fullname)
         order.generate_inner_id()
         order.create_support_chat()
 

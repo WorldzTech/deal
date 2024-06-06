@@ -130,6 +130,24 @@ class AddProductToCart(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+class RemoveProductFromUserCart(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        item = request.data.get('item')
+        size = request.data.get('size')
+
+        request.user.cart[item][size]['amount'] -= 1
+
+        if request.user.cart[item][size]['amount'] == 0:
+            del request.user.cart[item][size]
+
+        request.user.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
 class GetCatalog(APIView):
     def get(self, request):
         filter_tags_raw = request.GET.get('filters', None)
