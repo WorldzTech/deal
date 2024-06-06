@@ -79,7 +79,7 @@ class Order(models.Model):
     phoneNumber = models.CharField(max_length=1, null=True, blank=True)
 
     def create_support_chat(self):
-        admin = UserModel.objects.get(mobilePhone='1234')
+        admin = UserModel.objects.get(mobilePhone='+1234')
         chat = chatsUtils.start_chat(byUser=self.user, toUser=admin,
                                      title="Заказ №" + self.innerId)
         chat.add_message(who=admin,
