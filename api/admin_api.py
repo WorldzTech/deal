@@ -124,6 +124,7 @@ class ProductEndpoint(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
+
 class SupportRequestsEndpoint(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -346,3 +347,26 @@ class StorageUnitDetailsEndpoint(APIView):
             data['storage'][storageUnit.size] = storageUnit.amount
 
         return Response(data)
+
+
+class StoragePositionRemoveEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        product_item = request.data['product_item']
+        size_details = request.data.get('size_details', None)
+
+        product = Product.objects.get(item=product_item)
+
+        if size_details:
+            storageUnit = StorageUnit.objects.get(product=product, size=size_details)
+            storageUnit.delete()
+        else:
+            storageUnits = StorageUnit.objects.filter(product=product).all()
+            for unit in storageUnits:
+                unit.delete()
+
+        return Response(status=status.HTTP_200_OK)

@@ -157,6 +157,22 @@ class GetCatalog(APIView):
 
         if filter_tags_raw:
             filter_tags = filter_tags_raw.split(',')
+            fl = {}
+            for f in filter_tags:
+                if 'size_' not in f:
+                    f_obj = ProductTag.objects.filter(name=f).first()
+                    f_sections = ProductTagGroup.objects.all()
+
+                    f_section = None
+                    for s in f_sections:
+                        if f_obj in s.tags.all():
+                            f_section = s
+
+                    if f_section.name not in fl.keys():
+                        fl[f_section.name] = []
+
+                    fl[f_section.name].append(f)
+            print(fl)
             print("FILTERS APPLYING TAGS WITH", filter_tags)
         else:
             filter_tags = None
@@ -165,19 +181,19 @@ class GetCatalog(APIView):
         catalog = Product.objects.all()
 
         if filter_tags:
-            for tagName in filter_tags:
-                newCatalog = []
-                print('FILTERING BY TAG', tagName)
-                # catalog = catalog.filter(tags__name__in=[tagName])
+            for f_section in fl.keys():
+                filters = set(fl[f_section])
+                print(filters)
+                new_catalog = []
                 for product in catalog:
-                    pt = [t.name for t in product.tags.all()]
-                    if tagName in pt:
-                        newCatalog.append(product)
-                        print(f'{product} [{product.item}] passed with {pt}')
-                    elif 'size_' in tagName:
-                        newCatalog.append(product)
-                catalog = newCatalog
-                print(catalog)
+                    products_tags = set([x.name for x in product.tags.all()])
+                    print(products_tags)
+                    if len(list(products_tags.intersection(filters))) > 0:
+                        new_catalog.append(product)
+
+                    print(f"{filters} {products_tags} {products_tags.intersection(filters)}")
+                catalog = new_catalog
+
 
             sizes = [x.split('_')[1] for x in filter_tags if 'size_' in x]
 
