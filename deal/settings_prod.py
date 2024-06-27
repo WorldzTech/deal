@@ -6,7 +6,7 @@ SECRET_KEY = 'django-insecure-ub8r!xasdw@erf34xdvbdfc)nkxh(@cl2(m73_a#j7upav1qfh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', '77.222.53.148', 'deal.api.worldz.tech']
+ALLOWED_HOSTS = ['127.0.0.1', '77.222.53.148', 'deal.api.worldz.tech', '77.222.54.31']
 
 CSRF_TRUSTED_ORIGINS = ['https://deal.api.worldz.tech']
 
