@@ -168,12 +168,9 @@ class MakeOrder(APIView):
         except:
             return Response({"point": 156}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            order = Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart,
-                                         totalPrice=totalPrice, address=address, phoneNumber=mobilePhone, email=email,
-                                         receiverFullname=fullname)
-        except:
-            return Response({"point": 167}, status=status.HTTP_400_BAD_REQUEST)
+        order = Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart,
+                                     totalPrice=totalPrice, address=address, phoneNumber=mobilePhone, email=email,
+                                     receiverFullname=fullname)
 
         try:
             order.generate_inner_id()
