@@ -4,7 +4,7 @@ from pathlib import Path
 SECRET_KEY = 'django-insecure-ub8r!xasdw@erf34xdvbdfc)nkxh(@cl2(m73_a#j7upav1qfh!vw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '77.222.53.148', 'deal.api.worldz.tech', '77.222.54.31', 'deal.api.test.worldz.tech']
 
