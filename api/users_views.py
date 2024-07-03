@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import login, get_user_model
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -123,7 +125,7 @@ class MakeOrder(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        print(request.data)
+        logging.LogRecord(request.data, level=logging.INFO)
         user = request.user
         cartData = request.data['cart']
         address = request.data['address']
