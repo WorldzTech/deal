@@ -123,68 +123,67 @@ class MakeOrder(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
+        user = request.user
+        cartData = request.data['cart']
+        address = request.data['address']
+        mobilePhone = request.data['mobilePhone']
+        fullname = request.data['fullname']
+        email = request.data['email']
+
+        cart = {}
+
+        for position in cartData:
+            if position['item'] not in cart.keys():
+                cart[position['item']] = {}
+            if position['size'] not in cart[position['item']].keys():
+                cart[position['item']][position['size']] = {}
+
+            cart[position['item']][position['size']]['amount'] = position['amount']
+            cart[position['item']][position['size']]['available'] = position['available']
+
+        print(cart)
+
+        for item in cart:
+            product = Product.objects.get(item=item)
+            for size in cart[item]:
+                storageUnit = StorageUnit.objects.get(product=product, size=size)
+                if storageUnit.amount < cart[item][size]['amount']:
+                    print(storageUnit.amount, cart[item][size]['amount'])
+                    cart[item][size]['amount'] = cart[item][size]['available']
+
+        totalPrice = 0
+
         try:
-            user = request.user
-            cartData = request.data['cart']
-            address = request.data['address']
-            mobilePhone = request.data['mobilePhone']
-            fullname = request.data['fullname']
-            email = request.data['email']
-
-            cart = {}
-
-            for position in cartData:
-                if position['item'] not in cart.keys():
-                    cart[position['item']] = {}
-                if position['size'] not in cart[position['item']].keys():
-                    cart[position['item']][position['size']] = {}
-
-                cart[position['item']][position['size']]['amount'] = position['amount']
-                cart[position['item']][position['size']]['available'] = position['available']
-
-            print(cart)
-
             for item in cart:
                 product = Product.objects.get(item=item)
                 for size in cart[item]:
+                    totalPrice += product.price * cart[item][size]['amount']
                     storageUnit = StorageUnit.objects.get(product=product, size=size)
-                    if storageUnit.amount < cart[item][size]['amount']:
-                        print(storageUnit.amount, cart[item][size]['amount'])
-                        cart[item][size]['amount'] = cart[item][size]['available']
-
-            totalPrice = 0
-
-            try:
-                for item in cart:
-                    product = Product.objects.get(item=item)
-                    for size in cart[item]:
-                        totalPrice += product.price * cart[item][size]['amount']
-                        storageUnit = StorageUnit.objects.get(product=product, size=size)
-                        storageUnit.amount -= cart[item][size]['amount']
-                        storageUnit.save()
-            except:
-                return Response({"point": 156}, status=status.HTTP_400_BAD_REQUEST)
-
-            try:
-                order = Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart, totalPrice=totalPrice, address=address, phoneNumber=mobilePhone, email=email, receiverFullname=fullname)
-            except:
-                return Response({"point": 167}, status=status.HTTP_400_BAD_REQUEST)
-
-            try:
-                order.generate_inner_id()
-            except Exception:
-                return Response({"point": 172}, status=status.HTTP_400_BAD_REQUEST)
-
-            try:
-                order.create_support_chat()
-            except:
-                return Response({"point": 177}, status=status.HTTP_400_BAD_REQUEST)
-            user.cart = {}
-            user.save()
-
-            return Response(status=status.HTTP_200_OK)
+                    storageUnit.amount -= cart[item][size]['amount']
+                    storageUnit.save()
         except:
-            return Response({"point": 0}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"point": 156}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            order = Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart,
+                                         totalPrice=totalPrice, address=address, phoneNumber=mobilePhone, email=email,
+                                         receiverFullname=fullname)
+        except:
+            return Response({"point": 167}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            order.generate_inner_id()
+        except Exception:
+            return Response({"point": 172}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            order.create_support_chat()
+        except:
+            return Response({"point": 177}, status=status.HTTP_400_BAD_REQUEST)
+        user.cart = {}
+        user.save()
+
+        return Response(status=status.HTTP_200_OK)
 
 
 class GetUserOrders(APIView):
