@@ -8,7 +8,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '77.222.53.148', 'deal.api.worldz.tech', '77.222.54.31', 'deal.api.test.worldz.tech']
 
-CSRF_TRUSTED_ORIGINS = ['https://deal.api.worldz.tech', 'https://deal.api.test.worldz.tech']
+CSRF_TRUSTED_ORIGINS = ['https://deal.api.worldz.tech', 'https://deal.api.test.worldz.tech', 'https://deal-fashion.com', 'https://admin.deal-fashion.com']
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATABASES = {
