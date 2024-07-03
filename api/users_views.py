@@ -125,7 +125,8 @@ class MakeOrder(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        logging.LogRecord(request.data, level=logging.INFO)
+        logger = logging.getLogger(__name__)
+        logger.error(request.data)
         user = request.user
         cartData = request.data['cart']
         address = request.data['address']
