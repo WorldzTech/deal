@@ -153,15 +153,21 @@ class MakeOrder(APIView):
 
         totalPrice = 0
 
-        for item in cart:
-            product = Product.objects.get(item=item)
-            for size in cart[item]:
-                totalPrice += product.price * cart[item][size]['amount']
-                storageUnit = StorageUnit.objects.get(product=product, size=size)
-                storageUnit.amount -= cart[item][size]['amount']
-                storageUnit.save()
+        try:
+            for item in cart:
+                product = Product.objects.get(item=item)
+                for size in cart[item]:
+                    totalPrice += product.price * cart[item][size]['amount']
+                    storageUnit = StorageUnit.objects.get(product=product, size=size)
+                    storageUnit.amount -= cart[item][size]['amount']
+                    storageUnit.save()
+        except Exception as e:
+            return Response({"err": e, "point": 156}, status=status.HTTP_400_BAD_REQUEST)
 
-        order = Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart, totalPrice=totalPrice, address=address, phoneNumber=mobilePhone, email=email, receiverFullname=fullname)
+        try:
+            order = Order.objects.create(user=user, status=Order.OrderStatus.created, products=cart, totalPrice=totalPrice, address=address, phoneNumber=mobilePhone, email=email, receiverFullname=fullname)
+        except Exception as e:
+            return Response({"err": e, "point": 167}, status=status.HTTP_400_BAD_REQUEST)
         order.generate_inner_id()
         order.create_support_chat()
 
