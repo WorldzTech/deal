@@ -16,7 +16,7 @@ class StartChat(APIView):
     def post(self, request):
         user = request.user
 
-        chat = Chat.objects.create(p1=user, p2=UserModel.objects.get(mobilePhone='1234'))
+        chat = Chat.objects.create(p1=user, p2=UserModel.objects.get(mobilePhone='+71234'))
 
         return Response(status=status.HTTP_201_CREATED)
 
