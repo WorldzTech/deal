@@ -126,7 +126,7 @@ class MakeOrder(APIView):
 
     def post(self, request):
         logger = logging.getLogger(__name__)
-        logger.error(request.data)
+        logger.debug(request.data)
         user = request.user
         cartData = request.data['cart']
         address = request.data['address']
