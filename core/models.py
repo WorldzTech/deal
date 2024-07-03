@@ -76,7 +76,7 @@ class Order(models.Model):
     email = models.EmailField(blank=True, null=True, max_length=254)
     address = models.TextField(null=True, blank=True)
     receiverFullname = models.CharField(max_length=100, null=True, blank=True)
-    phoneNumber = models.CharField(max_length=1, null=True, blank=True)
+    phoneNumber = models.CharField(max_length=10, null=True, blank=True)
 
     def create_support_chat(self):
         admin = UserModel.objects.get(mobilePhone='+71234')
