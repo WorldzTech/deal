@@ -178,7 +178,7 @@ class SendMessageViaSupportAccountEndpoint(APIView):
         message = request.GET.get('message')
 
         chat = Chat.objects.filter(id=chatId).first()
-        admin = UserModel.objects.get(mobilePhone='1234')
+        admin = UserModel.objects.get(mobilePhone='+71234')
         chat.add_message(admin, message)
 
         return Response(status=status.HTTP_200_OK)
