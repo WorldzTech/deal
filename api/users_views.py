@@ -123,6 +123,7 @@ class MakeOrder(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
+        print(request.data)
         user = request.user
         cartData = request.data['cart']
         address = request.data['address']
