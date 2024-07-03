@@ -370,3 +370,62 @@ class StoragePositionRemoveEndpoint(APIView):
                 unit.delete()
 
         return Response(status=status.HTTP_200_OK)
+
+
+class StoragePositionAdjust(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        item = request.data['item']
+        size = request.data['size']
+        act = request.data['act']
+
+        product = Product.objects.get(item=item)
+
+        storageUnit = StorageUnit.objects.get(product=product, size=size)
+        if act == 'remove':
+            if storageUnit.amount > 0:
+                storageUnit.amount -= 1
+        else:
+            storageUnit.amount += 1
+
+        storageUnit.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        item = request.data['item']
+        size = request.data['size']
+
+        product = Product.objects.get(item=item)
+
+        storageUnit = StorageUnit.objects.get(product=product, size=size)
+        storageUnit.amount -= 1
+
+        storageUnit.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class RemoveStorageUnit(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        item = request.data['item']
+        size = request.data['size']
+
+        product = Product.objects.get(item=item)
+        storageUnit = StorageUnit.objects.get(product=product, size=size)
+
+        storageUnit.delete()
+
+        return Response(status=status.HTTP_200_OK)
