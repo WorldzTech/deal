@@ -111,7 +111,7 @@ class SupportRequest(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.PROTECT, blank=True, null=True)
 
     def startChat(self):
-        chat = chatsUtils.start_chat(byUser=self.user, toUser=UserModel.objects.get(mobilePhone='1234'),
+        chat = chatsUtils.start_chat(byUser=self.user, toUser=UserModel.objects.get(mobilePhone='+71234'),
                                      title=self.topic)
         chat.add_message(who=self.user, content=self.description)
         self.chat = chat
