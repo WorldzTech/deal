@@ -63,6 +63,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://192.168.10.8:3000',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:8000',
+    'http://77.222.54.31',
     'https://deal-fashion.com',
     'https://admin.deal-fashion.com'
 ]
@@ -72,6 +73,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://192.168.10.8:3000',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:8000',
+    'http://77.222.54.31',
     'https://deal-fashion.com',
     'https://admin.deal-fashion.com'
 ]
