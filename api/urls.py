@@ -43,6 +43,7 @@ urlpatterns = [
     path('catalog/', GetCatalog.as_view(), name='api_catalog'),
     path('tags/groups', TagGroupsEndpoint.as_view(), name='api_tags_groups'),
     path('tags/', TagsEndpoint.as_view(), name='api_tags'),
+    path('tags/delete/', TagDeleteEndpoint.as_view(), name='api_tags_delete'),
     path('showcases/', ShowcaseEndpoint.as_view(), name='api_showcases'),
     path('showcases/switch/', SwitchShowcaseProductEndpoint.as_view(), name='api_showcases_switch'),
     path('token/',

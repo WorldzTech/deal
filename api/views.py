@@ -194,7 +194,6 @@ class GetCatalog(APIView):
                     print(f"{filters} {products_tags} {products_tags.intersection(filters)}")
                 catalog = new_catalog
 
-
             sizes = [x.split('_')[1] for x in filter_tags if 'size_' in x]
 
             if len(sizes) > 0:
@@ -293,6 +292,22 @@ class TagsEndpoint(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         ProductTag.objects.create(name=tagName)
         return Response(status=status.HTTP_201_CREATED)
+
+
+class TagDeleteEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        tagName = request.data['tagName']
+
+        tag = ProductTag.objects.get(name=tagName)
+        tag.delete()
+
+        return Response(status=status.HTTP_200_OK)
+
 
 
 class ShowcaseEndpoint(APIView):
