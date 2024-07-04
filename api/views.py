@@ -231,8 +231,14 @@ class GetCatalog(APIView):
 
 class TagGroupsEndpoint(APIView):
     def get(self, request):
-        gid = request.GET.get('id', request.GET.get('gname', None))
+        gid = request.GET.get('id')
         withIds = request.GET.get('wid', False)
+
+        gname = request.GET.get('gname', None)
+
+        if gname:
+            if ProductTagGroup.objects.filter(name=gname).exists():
+                gid = ProductTagGroup.objects.get(name=gname).id
 
         if gid:
             data = {}
