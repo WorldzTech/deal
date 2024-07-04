@@ -231,7 +231,7 @@ class GetCatalog(APIView):
 
 class TagGroupsEndpoint(APIView):
     def get(self, request):
-        gid = request.GET.get('id', None)
+        gid = request.GET.get('id', request.GET.get('gname', None))
         withIds = request.GET.get('wid', False)
 
         if gid:
