@@ -40,9 +40,10 @@ class ProductEndpoint(APIView):
         tagsList = []
 
         for tag in tags.split(','):
-            tagObj = ProductTag.objects.filter(name=tag).first()
-            if not tagObj:
-                tagObj = ProductTag.objects.create(name=tag)
+            tagName = tag.strip().lower().replace(' ', '_')
+            if len(tagName) == 0 or ProductTag.objects.filter(name=tagName).exists():
+                continue
+            tagObj = ProductTag.objects.create(name=tagName)
             tagsList.append(tagObj)
 
         item = ''.join([random.choice(string.digits) for x in range(8)])

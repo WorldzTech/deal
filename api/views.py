@@ -288,8 +288,8 @@ class TagsEndpoint(APIView):
         return Response(data)
 
     def post(self, request):
-        tagName = request.data.get('tagName').lower().replace(' ', '_')
-        if len(tagName.strip()) == 0 or ProductTag.objects.filter(name=tagName).exists():
+        tagName = request.data.get('tagName').strip().lower().replace(' ', '_')
+        if len(tagName) == 0 or ProductTag.objects.filter(name=tagName).exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
         ProductTag.objects.create(name=tagName)
         return Response(status=status.HTTP_201_CREATED)
