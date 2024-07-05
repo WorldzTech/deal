@@ -42,9 +42,7 @@ class ProductEndpoint(APIView):
         for tag in tags.split(','):
             tagName = tag.strip().lower().replace(' ', '_')
             if len(tagName) == 0 or ProductTag.objects.filter(name=tagName).exists():
-                continue
-            tagObj = ProductTag.objects.create(name=tagName)
-            tagsList.append(tagObj)
+                tagsList.append(ProductTag.objects.filter(name=tagName).first())
 
         item = ''.join([random.choice(string.digits) for x in range(8)])
         while Product.objects.filter(item=item).exists():
