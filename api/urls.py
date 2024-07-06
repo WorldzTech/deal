@@ -46,6 +46,7 @@ urlpatterns = [
     path('tags/delete/', TagDeleteEndpoint.as_view(), name='api_tags_delete'),
     path('showcases/', ShowcaseEndpoint.as_view(), name='api_showcases'),
     path('showcases/switch/', SwitchShowcaseProductEndpoint.as_view(), name='api_showcases_switch'),
+    path('sizes/', GetAvailableSizes.as_view(), name='api_showcases_switch'),
     path('token/',
          jwt_views.TokenObtainPairView.as_view(),
          name='token_obtain_pair'),

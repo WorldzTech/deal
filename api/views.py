@@ -342,3 +342,10 @@ class SwitchShowcaseProductEndpoint(APIView):
             showcase.products.add(product)
 
         return Response(status=status.HTTP_200_OK)
+
+
+class GetAvailableSizes(APIView):
+    def get(self, request):
+        sizes = list(set([x.size for x in StorageUnit.objects.all()]))
+
+        return Response(sizes)
