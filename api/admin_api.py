@@ -428,3 +428,36 @@ class RemoveStorageUnit(APIView):
         storageUnit.delete()
 
         return Response(status=status.HTTP_200_OK)
+
+
+class MoveProductPhoto(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        item = request.data['item']
+        photoId = request.data['photoId']
+        direction = request.data['direction']
+
+        product = Product.objects.get(item=item)
+        photo = ProductPhoto.objects.get(id=photoId)
+
+        photosList = list(product.photos.all())
+        if direction == 'start':
+            if photosList.index(photo) > 0:
+                prevTmp = photosList[photosList.index(photo) - 1].image
+                photosList[photosList.index(photo) - 1].image = photo.image
+                photosList[photosList.index(photo) - 1].save()
+                photo.image = prevTmp
+                photo.save()
+        else:
+            if photosList.index(photo) < len(photosList)-1:
+                prevTmp = photosList[photosList.index(photo) + 1].image
+                photosList[photosList.index(photo) + 1].image = photo.image
+                photosList[photosList.index(photo) + 1].save()
+                photo.image = prevTmp
+                photo.save()
+
+        return Response(status=status.HTTP_200_OK)
