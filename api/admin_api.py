@@ -1,3 +1,4 @@
+import logging
 import random
 import string
 
@@ -101,7 +102,13 @@ class ProductEndpoint(APIView):
                 for tag in tagsList:
                     product.tags.add(tag)
 
-        print(request.FILES.getlist('photos'))
+        logger = logging.getLogger(__name__)
+        logger.debug("PUT PRODUCT DEBUG")
+        logger.debug(request.data)
+        logger.debug(request.FILES)
+        logger.debug(request.FILES.getlist('photos[]'))
+        logger.debug(request.FILES.getlist('photos'))
+
         if len(request.FILES.getlist('photos')) > 0:
             product.photos.clear()
             for f in request.FILES.getlist('photos[]'):
