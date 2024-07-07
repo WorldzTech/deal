@@ -226,6 +226,9 @@ class GetCatalog(APIView):
 
         print(data)
 
+        for d in data:
+            d['photos'].sort(key=lambda x: x['id'])
+
         return Response(data=data, status=status.HTTP_200_OK)
 
 
