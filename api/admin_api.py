@@ -101,6 +101,7 @@ class ProductEndpoint(APIView):
                 for tag in tagsList:
                     product.tags.add(tag)
 
+        print(request.FILES.getlist('photos[]'))
         if len(request.FILES.getlist('photos[]')) > 0:
             product.photos.clear()
             for f in request.FILES.getlist('photos[]'):
@@ -109,7 +110,7 @@ class ProductEndpoint(APIView):
 
         product.save()
 
-        return Response(status=status.HTTP_200_OK)
+        return Response({'ph': request.FILES.getlist('photos[]')}, status=status.HTTP_200_OK)
 
     def delete(self, request):
         if not request.user.is_staff:
