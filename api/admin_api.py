@@ -101,8 +101,8 @@ class ProductEndpoint(APIView):
                 for tag in tagsList:
                     product.tags.add(tag)
 
-        print(request.FILES.getlist('photos[]'))
-        if len(request.FILES.getlist('photos[]')) > 0:
+        print(request.FILES.getlist('photos'))
+        if len(request.FILES.getlist('photos')) > 0:
             product.photos.clear()
             for f in request.FILES.getlist('photos[]'):
                 image = ProductPhoto.objects.create(image=f)
