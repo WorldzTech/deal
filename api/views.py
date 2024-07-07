@@ -61,6 +61,7 @@ class GetProduct(APIView):
                 print('NOT AUTHENTICATED')
 
             data['data'] = ProductSerializer(product).data
+            data['data']['photoes'].sort(key=lambda x: x['id'])
             data['data']['rowtags'] = ','.join([x['name'] for x in ProductSerializer(product).data['tags']])
             data['ok'] = True
             if avail:
