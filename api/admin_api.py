@@ -444,7 +444,7 @@ class MoveProductPhoto(APIView):
         product = Product.objects.get(item=item)
         photo = ProductPhoto.objects.get(id=photoId)
 
-        photosList = list(product.photos.all())
+        photosList = list(product.photos.all()).sort(key=lambda x: x['id'])
         if direction == 'start':
             if photosList.index(photo) > 0:
                 prevTmp = photosList[photosList.index(photo) - 1].image
