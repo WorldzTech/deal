@@ -110,7 +110,7 @@ class ProductEndpoint(APIView):
 
         product.save()
 
-        return Response({'ph': request.FILES.getlist('photos[]'), 'raw': request.data}, status=status.HTTP_200_OK)
+        return Response({'ph': request.FILES.getlist('photos[]'), 'raw': request.data, 'rph': request.data('photos')}, status=status.HTTP_200_OK)
 
     def delete(self, request):
         if not request.user.is_staff:
