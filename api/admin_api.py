@@ -38,6 +38,12 @@ class ProductEndpoint(APIView):
         print(cover)
         print(cover)
 
+        print("POST PRODUCT DEBUG")
+        print(request.data)
+        print(request.FILES)
+        print(request.FILES.getlist('photos[]'))
+        print(request.FILES.getlist('photos'))
+
         tagsList = []
 
         for tag in tags.split(','):
@@ -67,13 +73,19 @@ class ProductEndpoint(APIView):
         if not request.user.is_staff:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        print("PUT PRODUCT DEBUG")
+        print(request.data)
+        print(request.FILES)
+        print(request.FILES.getlist('photos[]'))
+        print(request.FILES.getlist('photos'))
+
         name = request.data.get('name', None)
         price = request.data.get('price', None)
         description = request.data.get('description', None)
         short_description = request.data.get('shortDescription', None)
         tags = request.data.get('tags', None)
         cover = request.data.get('cover', None)
-        productItem = request.data['productItem']
+        productItem = request.data['productId']
 
         product = Product.objects.get(item=productItem)
 
@@ -103,13 +115,9 @@ class ProductEndpoint(APIView):
                     product.tags.add(tag)
 
         logger = logging.getLogger(__name__)
-        logger.debug("PUT PRODUCT DEBUG")
-        logger.debug(request.data)
-        logger.debug(request.FILES)
-        logger.debug(request.FILES.getlist('photos[]'))
-        logger.debug(request.FILES.getlist('photos'))
 
-        if len(request.FILES.getlist('photos')) > 0:
+
+        if len(request.FILES.getlist('photos[]')) > 0:
             product.photos.clear()
             for f in request.FILES.getlist('photos[]'):
                 image = ProductPhoto.objects.create(image=f)
@@ -117,7 +125,7 @@ class ProductEndpoint(APIView):
 
         product.save()
 
-        return Response({'ph': request.FILES.getlist('photos[]'), 'raw': request.data, 'rph': request.data['photos']}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
     def delete(self, request):
         if not request.user.is_staff:
