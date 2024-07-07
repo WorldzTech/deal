@@ -60,7 +60,7 @@ class ProductEndpoint(APIView):
 
         product.save()
 
-        return Response({'item': item, 'ph': request.FILES.getlist('photos[]')}, status=status.HTTP_201_CREATED)
+        return Response({'item': item}, status=status.HTTP_201_CREATED)
 
     def put(self, request):
         if not request.user.is_staff:
