@@ -384,6 +384,7 @@ class GeneratePaymentLink(APIView):
 
 class PaymentsNotify(APIView):
     def post(self, request):
+        print("GET POST NOTIFY")
         print(request.data)
 
         return Response(status=status.HTTP_200_OK)
