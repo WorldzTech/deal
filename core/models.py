@@ -180,7 +180,7 @@ class OrderInvoice(models.Model):
 
         for item in items:
             for size in dict(cart[item]):
-                totalPrice += cart[item][size]['totalPrice']
+                totalPrice += cart[item][size]['amount'] * cart[item][size]['price']
 
         self.pay_amount = totalPrice
         self.save()
