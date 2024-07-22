@@ -106,13 +106,12 @@ class ProductEndpoint(APIView):
             tagsList = []
 
             for tag in tags.split(','):
-                tagObj = ProductTag.objects.filter(name=tag).first()
-                if not tagObj:
-                    tagObj = ProductTag.objects.create(name=tag)
-                tagsList.append(tagObj)
+                tagName = tag.strip().lower().replace(' ', '_')
+                if len(tagName) == 0 or ProductTag.objects.filter(name=tagName).exists():
+                    tagsList.append(ProductTag.objects.filter(name=tagName).first())
 
-                for tag in tagsList:
-                    product.tags.add(tag)
+            for tag in tagsList:
+                product.tags.add(tag)
 
         logger = logging.getLogger(__name__)
 
