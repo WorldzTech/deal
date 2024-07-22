@@ -3,16 +3,16 @@ from storage.models import StorageUnit
 
 
 def create_order(invoice):
-    cart = {}
+    cart = invoice.order_data
 
-    for position in invoice.order_data:
-        if invoice.order_data[position]['item'] not in cart.keys():
-            cart[invoice.order_data[position]['item']] = {}
-        if invoice.order_data[position]['size'] not in cart[position['item']].keys():
-            cart[position['item']][position['size']] = {}
-
-        cart[position['item']][position['size']]['amount'] = position['amount']
-        cart[position['item']][position['size']]['available'] = position['available']
+    # for position in invoice.order_data:
+    #     if position not in cart.keys():
+    #         cart[position] = {}
+    #     if invoice.order_data[position]['size'] not in cart[position['item']].keys():
+    #         cart[position['item']][position['size']] = {}
+    #
+    #     cart[position['item']][position['size']]['amount'] = position['amount']
+    #     cart[position['item']][position['size']]['available'] = position['available']
 
     for item in cart:
         product = core_models.Product.objects.get(item=item)
