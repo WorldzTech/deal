@@ -161,15 +161,9 @@ class OrderInvoice(models.Model):
 
         order = create_order(self)
 
-        try:
-            order.generate_inner_id()
-        except Exception:
-            return {"point": 172}
+        order.generate_inner_id()
 
-        try:
-            order.create_support_chat()
-        except:
-            return {"point": 177}
+        order.create_support_chat()
 
         self.client.cart = {}
         self.client.save()
