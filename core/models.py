@@ -173,7 +173,6 @@ class OrderInvoice(models.Model):
         self.order_data = self.client.cart
 
         cart = dict(self.order_data)
-        print(cart)
         items = cart.keys()
 
         totalPrice = 0
@@ -205,13 +204,10 @@ class OrderInvoice(models.Model):
             "token": token
         }
 
-        print(str((datetime.now() + timedelta(minutes=5)).strftime("%Y-%m-%d %H:%M:%S")))
-
         resp = requests.post("https://deal-fashion.server.paykeeper.ru/change/invoice/preview/", data=payment_data,
                              headers={
                                  "Authorization": f"Basic aW52b2ljZXM6RGVhbEZhc2hpb25JbnZvaWNlcw=="
                              })
         res = resp.json()
-        print(res)
 
         return res['invoice_url']
