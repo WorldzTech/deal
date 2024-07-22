@@ -355,22 +355,35 @@ class GetAvailableSizes(APIView):
 
 
 class GeneratePaymentLink(APIView):
-    def get(self, request):
+    def post(self, request):
         cid = request.GET.get('cid', None)
-        oid = request.GET.get('oid', None)
 
-        client, order = None, None
+        cartData = request.data['cart']
+        address = request.data['address']
+        mobilePhone = request.data['mobilePhone']
+        fullname = request.data['fullname']
+        email = request.data['email']
+
+        client = None
 
         try:
             client = UserModel.objects.get(id=cid)
-            order = Order.objects.get(innerId=oid)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         invoice = OrderInvoice.objects.create(
             client=client,
-            order=order,
-            pay_amount=order.totalPrice
+            address=address,
+            mobile_phone=mobilePhone,
+            full_name=fullname,
+            email=email,
         )
 
         return Response({"link": invoice.get_payment_link()}, status=status.HTTP_200_OK)
+
+
+class PaymentsNotify(APIView):
+    def post(self, request):
+        print(request.data)
+
+        return Response(status=status.HTTP_200_OK)
