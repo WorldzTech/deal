@@ -169,6 +169,7 @@ class OrderInvoice(models.Model):
         self.client.save()
 
         self.applied = True
+        self.save()
 
     def get_payment_link(self):
         self.order_data = self.client.cart
