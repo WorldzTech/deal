@@ -47,6 +47,7 @@ urlpatterns = [
     path('showcases/', ShowcaseEndpoint.as_view(), name='api_showcases'),
     path('showcases/switch/', SwitchShowcaseProductEndpoint.as_view(), name='api_showcases_switch'),
     path('sizes/', GetAvailableSizes.as_view(), name='api_showcases_switch'),
+    path('order/pay/', GeneratePaymentLink.as_view(), name='api_order_pay'),
     path('token/',
          jwt_views.TokenObtainPairView.as_view(),
          name='token_obtain_pair'),

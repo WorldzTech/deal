@@ -184,7 +184,7 @@ class MakeOrder(APIView):
         user.cart = {}
         user.save()
 
-        return Response(status=status.HTTP_200_OK)
+        return Response({"id": order.innerId}, status=status.HTTP_200_OK)
 
 
 class GetUserOrders(APIView):

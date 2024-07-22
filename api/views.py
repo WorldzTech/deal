@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from core.models import Product, ProductTag, ProductShowcase
+from core.models import Product, ProductTag, ProductShowcase, OrderInvoice
 
 from core.serializer import *
 from storage.models import StorageUnit
@@ -353,3 +353,25 @@ class GetAvailableSizes(APIView):
         sizes = list(set([x.size for x in StorageUnit.objects.all()]))
 
         return Response(sizes)
+
+
+class GeneratePaymentLink(APIView):
+    def get(self, request):
+        cid = request.GET.get('cid', None)
+        oid = request.GET.get('oid', None)
+
+        client, order = None, None
+
+        try:
+            client = UserModel.objects.get(id=cid)
+            order = Order.objects.get(innerId=oid)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        invoice = OrderInvoice.objects.create(
+            client=client,
+            order=order,
+            pay_amount=order.totalPrice
+        )
+
+        return Response({"link": invoice.get_payment_link()}, status=status.HTTP_200_OK)

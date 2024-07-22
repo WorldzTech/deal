@@ -1,10 +1,16 @@
+import base64
 import random
 import string
+import uuid
+from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
+from django.contrib.sites import requests
 from django.db import models
 import chats.utils as chatsUtils
 from chats.models import Chat
+
+import requests
 
 UserModel = get_user_model()
 
@@ -127,3 +133,32 @@ class ProductShowcase(models.Model):
 
     def take_items(self):
         return [x.item for x in self.products.all()]
+
+
+class OrderInvoice(models.Model):
+    invoiceId = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    pay_amount = models.FloatField()
+    client = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+
+    def get_payment_link(self):
+        payment_data = {
+            "pay_amount": self.pay_amount,
+            "clientId": self.client.id,
+            "orderId": self.order.innerId,
+            "service_name": "Заказ " + self.order.innerId,
+            "client_email": self.client.email,
+            "client_phone": self.client.mobilePhone,
+            "expiry": str(datetime.now() + timedelta(minutes=5)),
+            "token": "abb129b37031314ed39e5bc6b6c7b98e"
+        }
+
+        hashed = base64.b64encode(b'invoices:DealFashionInvoices')
+
+        resp = requests.post("https://deal-fashion.server.paykeeper.ru/change/invoice/preview/", json=payment_data, headers={
+            "Authorization": f"Basic {hashed}"
+        })
+        res = resp.json()
+        print(res)
+
+        return res['invoice_url']
