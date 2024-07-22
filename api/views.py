@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -386,5 +387,9 @@ class PaymentsNotify(APIView):
     def post(self, request):
         print("GET POST NOTIFY")
         print(request.data)
+
+        logger = logging.getLogger(__name__)
+        logger.debug("GET POST NOTIFY")
+        logger.debug(request.data)
 
         return Response(status=status.HTTP_200_OK)
