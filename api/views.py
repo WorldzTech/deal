@@ -394,7 +394,7 @@ class PaymentsNotify(APIView):
 
         invoiceId = request.data['service_name']
 
-        invoice = OrderInvoice.objects.get(id=invoiceId)
+        invoice = OrderInvoice.objects.get(invoiceId=invoiceId)
 
         invoice.apply_invoice()
 
