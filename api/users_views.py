@@ -181,6 +181,7 @@ class MakeOrder(APIView):
             order.create_support_chat()
         except:
             return Response({"point": 177}, status=status.HTTP_400_BAD_REQUEST)
+
         user.cart = {}
         user.save()
 

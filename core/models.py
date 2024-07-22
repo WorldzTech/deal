@@ -142,6 +142,18 @@ class OrderInvoice(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
 
     def get_payment_link(self):
+        hashed = base64.b64encode(b'invoices:DealFashionInvoices')
+
+        tokenResp = requests.get('https://deal-fashion.server.paykeeper.ru/info/settings/token/', headers={
+            "Authorization": "Basic aW52b2ljZXM6RGVhbEZhc2hpb25JbnZvaWNlcw=="
+        })
+
+        print(tokenResp.status_code)
+        print(tokenResp.text)
+
+        tokenRes = tokenResp.json()
+        token = tokenRes['token']
+
         payment_data = {
             "pay_amount": self.pay_amount,
             "clientId": self.client.id,
@@ -149,15 +161,16 @@ class OrderInvoice(models.Model):
             "service_name": "Заказ " + self.order.innerId,
             "client_email": self.client.email,
             "client_phone": self.client.mobilePhone,
-            "expiry": str(datetime.now() + timedelta(minutes=5)),
-            "token": "abb129b37031314ed39e5bc6b6c7b98e"
+            "expiry": str((datetime.now() + timedelta(minutes=5)).strftime("%Y-%m-%d %H:%M:%S")),
+            "token": token
         }
 
-        hashed = base64.b64encode(b'invoices:DealFashionInvoices')
+        print(str((datetime.now() + timedelta(minutes=5)).strftime("%Y-%m-%d %H:%M:%S")))
 
-        resp = requests.post("https://deal-fashion.server.paykeeper.ru/change/invoice/preview/", json=payment_data, headers={
-            "Authorization": f"Basic {hashed}"
-        })
+        resp = requests.post("https://deal-fashion.server.paykeeper.ru/change/invoice/preview/", data=payment_data,
+                             headers={
+                                 "Authorization": f"Basic aW52b2ljZXM6RGVhbEZhc2hpb25JbnZvaWNlcw=="
+                             })
         res = resp.json()
         print(res)
 

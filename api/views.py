@@ -156,8 +156,6 @@ class GetCatalog(APIView):
         maxPrice = float(request.GET.get('maxPrice', 10 ** 10))
         newest = request.GET.get('newest', False)
 
-
-
         if filter_tags_raw:
             filter_tags = filter_tags_raw.split(',')
             fl = {}
@@ -313,7 +311,6 @@ class TagDeleteEndpoint(APIView):
         tag.delete()
 
         return Response(status=status.HTTP_200_OK)
-
 
 
 class ShowcaseEndpoint(APIView):
