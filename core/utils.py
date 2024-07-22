@@ -37,6 +37,6 @@ def create_order(invoice):
                                              totalPrice=totalPrice, address=invoice.address,
                                              phoneNumber=invoice.mobile_phone,
                                              email=invoice.email,
-                                             receiverFullname=invoice.fullname)
+                                             receiverFullname=invoice.full_name)
 
     return order
