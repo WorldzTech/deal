@@ -392,4 +392,10 @@ class PaymentsNotify(APIView):
         logger.debug("GET POST NOTIFY")
         logger.debug(request.data)
 
+        invoiceId = request.data['service_name']
+
+        invoice = OrderInvoice.objects.get(id=invoiceId)
+
+        invoice.apply_invoice()
+
         return Response(status=status.HTTP_200_OK)

@@ -147,6 +147,8 @@ class OrderInvoice(models.Model):
     full_name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
 
+    applied = models.BooleanField(default=False)
+
     # cartData = request.data['cart']
     #         address = request.data['address']
     #         mobilePhone = request.data['mobilePhone']
@@ -154,6 +156,9 @@ class OrderInvoice(models.Model):
     #         email = request.data['email']
 
     def apply_invoice(self):
+        if self.applied:
+            return
+
         order = create_order(self)
 
         try:
@@ -168,6 +173,8 @@ class OrderInvoice(models.Model):
 
         self.client.cart = {}
         self.client.save()
+
+        self.applied = True
 
     def get_payment_link(self):
         self.order_data = self.client.cart
@@ -197,7 +204,7 @@ class OrderInvoice(models.Model):
             "pay_amount": totalPrice,
             "clientId": self.client.id,
             "orderId": self.invoiceId,
-            "service_name": "Заказ " + str(self.invoiceId),
+            "service_name": str(self.invoiceId),
             "client_email": self.client.email,
             "client_phone": self.client.mobilePhone,
             "expiry": str((datetime.now() + timedelta(minutes=5)).strftime("%Y-%m-%d %H:%M:%S")),
