@@ -197,7 +197,7 @@ class GetCatalog(APIView):
                     print(f"{filters} {products_tags} {products_tags.intersection(filters)}")
                 catalog = new_catalog
 
-            sizes = [x.split('_')[1] for x in filter_tags if 'size_' in x]
+            sizes = [x.split('_')[1].replace('dot', '.') for x in filter_tags if 'size_' in x]
 
             if len(sizes) > 0:
                 newCatalog = []
