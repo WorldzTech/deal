@@ -1,6 +1,6 @@
 from django.contrib import admin
 from core.models import BlogPost, Product, ProductPhoto, Order, SupportRequest, ProductTag, ProductTagGroup, \
-    ProductShowcase
+    ProductShowcase, OrderInvoice
 
 
 class OrderAdmin(admin.ModelAdmin):
@@ -17,3 +17,4 @@ admin.site.register(SupportRequest)
 admin.site.register(ProductTag)
 admin.site.register(ProductTagGroup)
 admin.site.register(ProductShowcase)
+admin.site.register(OrderInvoice)

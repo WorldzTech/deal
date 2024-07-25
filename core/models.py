@@ -12,6 +12,8 @@ from chats.models import Chat
 
 import requests
 
+from core.utils import create_order
+
 UserModel = get_user_model()
 
 
@@ -137,28 +139,77 @@ class ProductShowcase(models.Model):
 
 class OrderInvoice(models.Model):
     invoiceId = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    pay_amount = models.FloatField()
+    pay_amount = models.FloatField(null=True, blank=True)
     client = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order_data = models.JSONField(null=True, blank=True, default={})
+    address = models.CharField(max_length=255, default="")
+    mobile_phone = models.CharField(max_length=20, null=True, blank=True)
+    full_name = models.CharField(max_length=255, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+
+    applied = models.BooleanField(default=False)
+
+    # cartData = request.data['cart']
+    #         address = request.data['address']
+    #         mobilePhone = request.data['mobilePhone']
+    #         fullname = request.data['fullname']
+    #         email = request.data['email']
+
+    def apply_invoice(self):
+        if self.applied:
+            return
+
+        order = create_order(self)
+
+        order.generate_inner_id()
+
+        order.create_support_chat()
+
+        self.client.cart = {}
+        self.client.save()
+
+        self.applied = True
+        self.save()
 
     def get_payment_link(self):
-        payment_data = {
-            "pay_amount": self.pay_amount,
-            "clientId": self.client.id,
-            "orderId": self.order.innerId,
-            "service_name": "Заказ " + self.order.innerId,
-            "client_email": self.client.email,
-            "client_phone": self.client.mobilePhone,
-            "expiry": str(datetime.now() + timedelta(minutes=5)),
-            "token": "abb129b37031314ed39e5bc6b6c7b98e"
-        }
+        self.order_data = self.client.cart
+
+        cart = dict(self.order_data)
+        items = cart.keys()
+
+        totalPrice = 0
+
+        for item in items:
+            for size in dict(cart[item]):
+                totalPrice += cart[item][size]['amount'] * cart[item][size]['price']
+
+        self.pay_amount = totalPrice
+        self.save()
 
         hashed = base64.b64encode(b'invoices:DealFashionInvoices')
 
-        resp = requests.post("https://deal-fashion.server.paykeeper.ru/change/invoice/preview/", json=payment_data, headers={
-            "Authorization": f"Basic {hashed}"
+        tokenResp = requests.get('https://deal-fashion.server.paykeeper.ru/info/settings/token/', headers={
+            "Authorization": "Basic aW52b2ljZXM6RGVhbEZhc2hpb25JbnZvaWNlcw=="
         })
+
+        tokenRes = tokenResp.json()
+        token = tokenRes['token']
+
+        payment_data = {
+            "pay_amount": totalPrice,
+            "clientId": self.client.id,
+            "orderId": self.invoiceId,
+            "service_name": str(self.invoiceId),
+            "client_email": self.client.email,
+            "client_phone": self.client.mobilePhone,
+            "expiry": str((datetime.now() + timedelta(minutes=5)).strftime("%Y-%m-%d %H:%M:%S")),
+            "token": token
+        }
+
+        resp = requests.post("https://deal-fashion.server.paykeeper.ru/change/invoice/preview/", data=payment_data,
+                             headers={
+                                 "Authorization": f"Basic aW52b2ljZXM6RGVhbEZhc2hpb25JbnZvaWNlcw=="
+                             })
         res = resp.json()
-        print(res)
 
         return res['invoice_url']

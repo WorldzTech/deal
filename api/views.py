@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -155,8 +156,6 @@ class GetCatalog(APIView):
         minPrice = float(request.GET.get('minPrice', 0))
         maxPrice = float(request.GET.get('maxPrice', 10 ** 10))
         newest = request.GET.get('newest', False)
-
-
 
         if filter_tags_raw:
             filter_tags = filter_tags_raw.split(',')
@@ -315,7 +314,6 @@ class TagDeleteEndpoint(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-
 class ShowcaseEndpoint(APIView):
     def get(self, request):
         sid = request.GET.get('sid', None)
@@ -358,22 +356,46 @@ class GetAvailableSizes(APIView):
 
 
 class GeneratePaymentLink(APIView):
-    def get(self, request):
+    def post(self, request):
         cid = request.GET.get('cid', None)
-        oid = request.GET.get('oid', None)
 
-        client, order = None, None
+        cartData = request.data['cart']
+        address = request.data['address']
+        mobilePhone = request.data['mobilePhone']
+        fullname = request.data['fullname']
+        email = request.data['email']
+
+        client = None
 
         try:
             client = UserModel.objects.get(id=cid)
-            order = Order.objects.get(innerId=oid)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         invoice = OrderInvoice.objects.create(
             client=client,
-            order=order,
-            pay_amount=order.totalPrice
+            address=address,
+            mobile_phone=mobilePhone,
+            full_name=fullname,
+            email=email,
         )
 
         return Response({"link": invoice.get_payment_link()}, status=status.HTTP_200_OK)
+
+
+class PaymentsNotify(APIView):
+    def post(self, request):
+        print("GET POST NOTIFY")
+        print(request.data)
+
+        logger = logging.getLogger(__name__)
+        logger.debug("GET POST NOTIFY")
+        logger.debug(request.data)
+
+        invoiceId = request.data['service_name']
+
+        invoice = OrderInvoice.objects.get(invoiceId=invoiceId)
+
+        invoice.apply_invoice()
+
+        return Response(status=status.HTTP_200_OK)
