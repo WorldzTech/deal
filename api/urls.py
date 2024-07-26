@@ -23,6 +23,7 @@ from .admin_api import *
 from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
 from deal import settings
+from .utils import *
 
 urlpatterns = [
     path('post/get/', GetBlogPost.as_view(), name='api_post_get'),
@@ -57,4 +58,5 @@ urlpatterns = [
          name='token_refresh'),
     path('', include('chats.chat_api_urls')),
     path('admin/', include('api.admin_api_urls'), name='admin_api'),
+    path('utils/remdup/', remdup.as_view(), name='rem_dup')
 ]
