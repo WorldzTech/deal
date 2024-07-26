@@ -56,6 +56,9 @@ class Product(models.Model):
     sex = models.CharField(choices=ProductSex, max_length=20, null=True, blank=True)
     tags = models.ManyToManyField(ProductTag, blank=True, null=True)
 
+    def __str__(self):
+        return self.title
+
 
 class Order(models.Model):
     class OrderStatus(models.TextChoices):
