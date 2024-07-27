@@ -281,13 +281,13 @@ class StorageEndpoint(APIView):
         data = {}
 
         for storageUnit in StorageUnit.objects.all():
-            if storageUnit.product.title not in data.keys():
-                data[storageUnit.product.title] = {
+            if storageUnit.product.item not in data.keys():
+                data[storageUnit.product.item] = {
+                    'title': storageUnit.product.title,
                     'sizes': [],
-                    'item': storageUnit.product.item
                 }
 
-            data[storageUnit.product.title]['sizes'].append(storageUnit.size)
+            data[storageUnit.product.item]['sizes'].append(storageUnit.size)
 
         return Response(data)
 
@@ -304,7 +304,7 @@ class StorageEndpoint(APIView):
         if size:
             product = Product.objects.filter(item=itemOrTitle).first()
             if not product:
-                product = Product.objects.filter(title=itemOrTitle).first()
+                return Response(status=status.HTTP_404_NOT_FOUND)
 
             if product:
                 storageUnit = StorageUnit.objects.filter(product=product, size=size).first()
