@@ -6,7 +6,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'deal',
+        'USER': 'deal_admin',
+        'PASSWORD': 'Red159753tie!',
+        'HOST': '77.222.54.31',
+        'PORT': '5432',
     }
 }

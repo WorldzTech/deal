@@ -152,6 +152,8 @@ class RemoveProductFromUserCart(APIView):
 
 class GetCatalog(APIView):
     def get(self, request):
+        page = int(request.GET.get('page', 1))
+        pagination_step = 20
         filter_tags_raw = request.GET.get('filters', None)
         minPrice = float(request.GET.get('minPrice', 0))
         maxPrice = float(request.GET.get('maxPrice', 10 ** 10))
@@ -174,63 +176,50 @@ class GetCatalog(APIView):
                         fl[f_section.name] = []
 
                     fl[f_section.name].append(f)
-            print(fl)
-            print("FILTERS APPLYING TAGS WITH", filter_tags)
         else:
             filter_tags = None
-            print("NO FILTERS APPLYING")
 
         catalog = Product.objects.all()
 
         if filter_tags:
             for f_section in fl.keys():
                 filters = set(fl[f_section])
-                print(filters)
                 new_catalog = []
                 for product in catalog:
                     products_tags = set([x.name for x in product.tags.all()])
-                    print(products_tags)
                     if len(list(products_tags.intersection(filters))) > 0:
                         new_catalog.append(product)
-
-                    print(f"{filters} {products_tags} {products_tags.intersection(filters)}")
                 catalog = new_catalog
 
             sizes = [x.split('_')[1].replace('dot', '.').replace('slash', '/') for x in filter_tags if 'size_' in x]
 
             if len(sizes) > 0:
                 newCatalog = []
-                print('FILTERING BY SIZE')
-                print(sizes)
                 for product in catalog:
                     if StorageUnit.objects.filter(product=product, size__in=sizes, amount__gt=0).exists():
                         newCatalog.append(product)
 
                 catalog = newCatalog
-                print(catalog)
 
         newCatalog = []
         for product in catalog:
-            print(f"{minPrice} <= {product.price} <= {maxPrice}")
             if minPrice <= product.price <= maxPrice:
                 newCatalog.append(product)
 
         catalog = newCatalog
 
         data = []
-        for product in catalog:
+        for product in catalog[(page-1) * pagination_step:page * pagination_step]:
             data.append(ProductSerializer(product).data)
 
         if newest:
             data.sort(key=lambda x: x['id'])
             data = data[::-1]
 
-        print(data)
-
         for d in data:
             d['photos'].sort(key=lambda x: x['id'])
 
-        return Response(data=data, status=status.HTTP_200_OK)
+        return Response(data={"page": page, "catalog": data}, status=status.HTTP_200_OK)
 
 
 class TagGroupsEndpoint(APIView):
