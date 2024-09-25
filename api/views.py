@@ -227,7 +227,7 @@ class GetCatalog(APIView):
         if page != -1:
             return Response(data={"page": page, "catalog": data}, status=status.HTTP_200_OK)
         else:
-            return Response(data={"catalog": data}, status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_200_OK)
 
 
 class TagGroupsEndpoint(APIView):
