@@ -209,8 +209,13 @@ class GetCatalog(APIView):
         catalog = newCatalog
 
         data = []
-        for product in catalog[(page-1) * pagination_step:page * pagination_step]:
-            data.append(ProductSerializer(product).data)
+
+        if page != -1:
+            for product in catalog[(page-1) * pagination_step:page * pagination_step]:
+                data.append(ProductSerializer(product).data)
+        else:
+            for product in catalog:
+                data.append(ProductSerializer(product).data)
 
         if newest:
             data.sort(key=lambda x: x['id'])
@@ -219,7 +224,10 @@ class GetCatalog(APIView):
         for d in data:
             d['photos'].sort(key=lambda x: x['id'])
 
-        return Response(data={"page": page, "catalog": data}, status=status.HTTP_200_OK)
+        if page != -1:
+            return Response(data={"page": page, "catalog": data}, status=status.HTTP_200_OK)
+        else:
+            return Response(data={"catalog": data}, status=status.HTTP_200_OK)
 
 
 class TagGroupsEndpoint(APIView):
