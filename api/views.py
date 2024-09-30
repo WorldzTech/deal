@@ -213,16 +213,15 @@ class GetCatalog(APIView):
 
         total_pages = math.ceil(len(catalog) / pagination_step)
 
+        if newest:
+            catalog.sort(key=lambda x: x.id, reverse=True)
+
         if page != -1:
             for product in catalog[(page-1) * pagination_step:page * pagination_step]:
                 data.append(ProductSerializer(product).data)
         else:
             for product in catalog:
                 data.append(ProductSerializer(product).data)
-
-        if newest:
-            data.sort(key=lambda x: x['id'])
-            data = data[::-1]
 
         for d in data:
             d['photos'].sort(key=lambda x: x['id'])
