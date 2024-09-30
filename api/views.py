@@ -1,5 +1,6 @@
 import json
 import logging
+import math
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -210,6 +211,8 @@ class GetCatalog(APIView):
 
         data = []
 
+        total_pages = math.ceil(len(catalog) / pagination_step)
+
         if page != -1:
             for product in catalog[(page-1) * pagination_step:page * pagination_step]:
                 data.append(ProductSerializer(product).data)
@@ -225,7 +228,7 @@ class GetCatalog(APIView):
             d['photos'].sort(key=lambda x: x['id'])
 
         if page != -1:
-            return Response(data={"page": page, "catalog": data}, status=status.HTTP_200_OK)
+            return Response(data={"page": page, "pages": total_pages,"catalog": data}, status=status.HTTP_200_OK)
         else:
             return Response(data, status=status.HTTP_200_OK)
 
