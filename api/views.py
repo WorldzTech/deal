@@ -181,25 +181,33 @@ class GetCatalog(APIView):
 
         catalog = Product.objects.all()
 
+        # if filter_tags:
+        #     for f_section in fl.keys():
+        #         filters = set(fl[f_section])
+        #         new_catalog = []
+        #         for product in catalog:
+        #             products_tags = set([x.name for x in product.tags.all()])
+        #             if len(list(products_tags.intersection(filters))) > 0:
+        #                 new_catalog.append(product)
+        #         catalog = new_catalog
+        #
+        #     sizes = [x.split('_')[1].replace('dot', '.').replace('slash', '/') for x in filter_tags if 'size_' in x]
+        #
+        #     if len(sizes) > 0:
+        #         newCatalog = []
+        #         for product in catalog:
+        #             if StorageUnit.objects.filter(product=product, size__in=sizes, amount__gt=0).exists():
+        #                 newCatalog.append(product)
+        #
+        #         catalog = newCatalog
+
+        newCatalog = []
         if filter_tags:
-            for f_section in fl.keys():
-                filters = set(fl[f_section])
-                new_catalog = []
-                for product in catalog:
-                    products_tags = set([x.name for x in product.tags.all()])
-                    if len(list(products_tags.intersection(filters))) > 0:
-                        new_catalog.append(product)
-                catalog = new_catalog
+            for product in catalog:
+                if set(product.tags.all()).intersection(filter_tags):
+                    newCatalog.append(product)
 
-            sizes = [x.split('_')[1].replace('dot', '.').replace('slash', '/') for x in filter_tags if 'size_' in x]
-
-            if len(sizes) > 0:
-                newCatalog = []
-                for product in catalog:
-                    if StorageUnit.objects.filter(product=product, size__in=sizes, amount__gt=0).exists():
-                        newCatalog.append(product)
-
-                catalog = newCatalog
+            catalog = newCatalog
 
         newCatalog = []
         for product in catalog:
