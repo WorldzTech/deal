@@ -211,11 +211,12 @@ class GetCatalog(APIView):
 
         if filter_tags:
             inner_sex_filters = set(filter_tags).intersection(sex_filter_group)
-            for product in catalog:
-                if len(set([x.name for x in product.tags.all()]).intersection(set(inner_sex_filters))) > 0:
-                    newCatalog.append(product)
+            if len(inner_sex_filters) > 0:
+                for product in catalog:
+                    if len(set([x.name for x in product.tags.all()]).intersection(set(inner_sex_filters))) > 0:
+                        newCatalog.append(product)
 
-            catalog = newCatalog
+                catalog = newCatalog
 
 
 
