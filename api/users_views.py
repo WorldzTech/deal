@@ -95,6 +95,7 @@ class GetUserCart(APIView):
         print(cart)
 
         resp = []
+        old_items = []
 
         for item in cart:
             itemData = {
@@ -109,7 +110,7 @@ class GetUserCart(APIView):
                 product = Product.objects.filter(item=item).first()
 
                 if product is None:
-                    request.user.cart.pop(item)
+                    old_items.append(itemData)
                     break
 
                 unit = StorageUnit.objects.get(product=product, size=size)
@@ -121,6 +122,9 @@ class GetUserCart(APIView):
                 itemData = {
                     'item': item
                 }
+
+        for item in old_items:
+            request.user.cart.pop(item)
 
         return Response(resp, status=status.HTTP_200_OK)
 
