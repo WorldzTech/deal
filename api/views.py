@@ -207,7 +207,7 @@ class GetCatalog(APIView):
         newCatalog = []
         if filter_tags:
             for product in catalog:
-                if set(product.tags.all()).intersection(filter_tags):
+                if len(set(product.tags.all()).intersection(set(filter_tags))) > 0:
                     newCatalog.append(product)
 
             catalog = newCatalog
