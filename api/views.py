@@ -1,5 +1,6 @@
 import json
 import logging
+import math
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -217,17 +218,26 @@ class GetCatalog(APIView):
         catalog = newCatalog
 
         data = []
-        for product in catalog[(page-1) * pagination_step:page * pagination_step]:
-            data.append(ProductSerializer(product).data)
+
+        total_pages = math.ceil(len(catalog) / pagination_step)
 
         if newest:
-            data.sort(key=lambda x: x['id'])
-            data = data[::-1]
+            catalog.sort(key=lambda x: x.id, reverse=True)
+
+        if page != -1:
+            for product in catalog[(page-1) * pagination_step:page * pagination_step]:
+                data.append(ProductSerializer(product).data)
+        else:
+            for product in catalog:
+                data.append(ProductSerializer(product).data)
 
         for d in data:
             d['photos'].sort(key=lambda x: x['id'])
 
-        return Response(data={"page": page, "catalog": data}, status=status.HTTP_200_OK)
+        if page != -1:
+            return Response(data={"page": page, "pages": total_pages,"catalog": data}, status=status.HTTP_200_OK)
+        else:
+            return Response(data, status=status.HTTP_200_OK)
 
 
 class TagGroupsEndpoint(APIView):
