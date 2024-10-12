@@ -182,6 +182,8 @@ class GetCatalog(APIView):
 
         catalog = Product.objects.all()
 
+        print("FILTERS: " + str(filter_tags))
+
         # if filter_tags:
         #     for f_section in fl.keys():
         #         filters = set(fl[f_section])
