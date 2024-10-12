@@ -211,6 +211,7 @@ class GetCatalog(APIView):
 
         if filter_tags:
             inner_sex_filters = set(filter_tags).intersection(sex_filter_group)
+            filter_tags = list(set(filter_tags).difference(inner_sex_filters))
             if len(inner_sex_filters) > 0:
                 for product in catalog:
                     if len(set([x.name for x in product.tags.all()]).intersection(set(inner_sex_filters))) > 0:
