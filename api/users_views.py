@@ -110,7 +110,7 @@ class GetUserCart(APIView):
 
                 if product is None:
                     request.user.cart.pop(item)
-                    continue
+                    break
 
                 unit = StorageUnit.objects.get(product=product, size=size)
                 itemData['available'] = unit.amount
