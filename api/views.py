@@ -4,6 +4,7 @@ import math
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.db.backends.base.base import logger
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -182,7 +183,7 @@ class GetCatalog(APIView):
 
         catalog = Product.objects.all()
 
-        print("FILTERS: " + str(filter_tags))
+        logger.debug("FILTERS: " + str(filter_tags))
 
         # if filter_tags:
         #     for f_section in fl.keys():
@@ -207,7 +208,7 @@ class GetCatalog(APIView):
         newCatalog = []
         if filter_tags:
             for product in catalog:
-                if len(set(product.tags.all()).intersection(set(filter_tags))) > 0:
+                if len(set([x.name for x in product.tags.all()]).intersection(set(filter_tags))) > 0:
                     newCatalog.append(product)
 
             catalog = newCatalog
