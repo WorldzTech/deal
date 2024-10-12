@@ -106,7 +106,11 @@ class GetUserCart(APIView):
                 itemData['size'] = size
                 itemData['amount'] = cart[item][size]['amount']
 
-                product = Product.objects.get(item=item)
+                product = Product.objects.filter(item=item).first()
+
+                if product is None:
+                    request.user.cart.pop(item)
+                    continue
 
                 unit = StorageUnit.objects.get(product=product, size=size)
                 itemData['available'] = unit.amount
