@@ -252,8 +252,7 @@ class GetCatalog(APIView):
 
         total_pages = math.ceil(len(catalog) / pagination_step)
 
-        if newest:
-            catalog.sort(key=lambda x: x.id, reverse=True)
+        catalog.sort(key=lambda x: x.id, reverse=True)
 
         if page != -1:
             for product in catalog[(page - 1) * pagination_step:page * pagination_step]:
