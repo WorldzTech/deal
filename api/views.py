@@ -205,7 +205,7 @@ class GetCatalog(APIView):
         #
         #         catalog = newCatalog
 
-        # sex filtering
+        # SEX FILTERING
         newCatalog = []
         sex_filter_group = set([x.name for x in ProductTagGroup.objects.get(name="Пол").tags.all()])
 
@@ -219,7 +219,19 @@ class GetCatalog(APIView):
 
                 catalog = newCatalog
 
+        # BRAND FILTERING
+        newCatalog = []
+        brand_filter_group = set([x.name for x in ProductTagGroup.objects.get(name="Бренды").tags.all()])
 
+        if filter_tags:
+            inner_brand_filters = set(filter_tags).intersection(brand_filter_group)
+            filter_tags = list(set(filter_tags).difference(inner_brand_filters))
+            if len(inner_brand_filters) > 0:
+                for product in catalog:
+                    if len(set([x.name for x in product.tags.all()]).intersection(set(inner_brand_filters))) > 0:
+                        newCatalog.append(product)
+
+                catalog = newCatalog
 
         newCatalog = []
         if filter_tags:
@@ -244,7 +256,7 @@ class GetCatalog(APIView):
             catalog.sort(key=lambda x: x.id, reverse=True)
 
         if page != -1:
-            for product in catalog[(page-1) * pagination_step:page * pagination_step]:
+            for product in catalog[(page - 1) * pagination_step:page * pagination_step]:
                 data.append(ProductSerializer(product).data)
         else:
             for product in catalog:
@@ -254,7 +266,8 @@ class GetCatalog(APIView):
             d['photos'].sort(key=lambda x: x['id'])
 
         if page != -1:
-            return Response(data={"page": page, "pages": total_pages,"catalog": data, "filters": filter_tags}, status=status.HTTP_200_OK)
+            return Response(data={"page": page, "pages": total_pages, "catalog": data, "filters": filter_tags},
+                            status=status.HTTP_200_OK)
         else:
             return Response(data, status=status.HTTP_200_OK)
 
