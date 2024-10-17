@@ -100,7 +100,7 @@ class GetUserCart(APIView):
         renew_cart = {}
 
         for item in cart:
-            if Product.objects.filter(item=item).exists():
+            if Product.objects.filter(item=item).exists() and cart[item]:
                 renew_cart[item] = cart[item]
 
         request.user.cart = renew_cart
