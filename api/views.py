@@ -69,10 +69,11 @@ class GetProduct(APIView):
             data['ok'] = True
             if avail:
                 availables = StorageUnit.objects.filter(product=product)
-                data['available'] = {}
+                data['available'] = []
                 for available in availables:
+                    av = {"size": available.size, "amount": available.amount, "storageUnitId": available.id}
                     if available.amount > 0:
-                        data['available'][available.size] = available.amount
+                        data['available'].append(av)
         else:
             data['ok'] = False
 
