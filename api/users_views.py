@@ -97,7 +97,16 @@ class GetUserCart(APIView):
         resp = []
         old_items = []
 
+        renew_cart = {}
+
         for item in cart:
+            if Product.objects.filter(item=item).exists():
+                renew_cart[item] = cart[item]
+
+        request.user.cart = renew_cart
+        request.user.save()
+
+        for item in renew_cart:
             itemData = {
                 'item': item
             }
@@ -109,10 +118,6 @@ class GetUserCart(APIView):
 
                 product = Product.objects.filter(item=item).first()
 
-                if product is None:
-                    old_items.append(item)
-                    break
-
                 unit = StorageUnit.objects.get(product=product, size=size)
                 itemData['available'] = unit.amount
                 itemData['price'] = product.price
@@ -122,12 +127,6 @@ class GetUserCart(APIView):
                 itemData = {
                     'item': item
                 }
-
-        for item in old_items:
-            request.user.cart.pop(item)
-
-
-        request.user.save()
 
         return Response(resp, status=status.HTTP_200_OK)
 
