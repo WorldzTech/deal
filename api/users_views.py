@@ -126,6 +126,9 @@ class GetUserCart(APIView):
         for item in old_items:
             request.user.cart.pop(item)
 
+
+        request.user.save()
+
         return Response(resp, status=status.HTTP_200_OK)
 
 
