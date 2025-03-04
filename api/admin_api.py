@@ -488,6 +488,6 @@ class EditableImages(APIView):
     def get(self, request):
         eis = EditableImage.objects.all()
 
-        data = [{"label": x.label, "url": x.url} for x in eis]
+        data = [{"label": x.label, "url": x.get_url()} for x in eis]
 
         return Response(data, status=status.HTTP_200_OK)
