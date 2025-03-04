@@ -494,7 +494,7 @@ class EditableImages(APIView):
 
 
     def post(self, request):
-        eid = request.data["eid"]
+        eid = request.data.get('eid', None)
         if not eid:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
