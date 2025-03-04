@@ -5,6 +5,7 @@ import math
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.db.backends.base.base import logger
+from django.db.models import Q
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -85,7 +86,7 @@ class SearchProductByMask(APIView):
 
     def get(self, request):
         mask = request.GET.get('mask')
-        products = Product.objects.filter(title__icontains=mask)
+        products = Product.objects.filter(Q(title__icontains=mask) | Q(title__icontains=" ".join(mask.split()[::-1])))
         data = {
             'mask': mask,
             'res': [],
