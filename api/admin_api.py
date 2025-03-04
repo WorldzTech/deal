@@ -502,7 +502,7 @@ class EditableImages(APIView):
         if not eis:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        print(request.data)
-        print(request.data["newImage"])
+        eis.image = request.data["newImage"]
+        eis.save()
 
-        return Response(request.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
