@@ -41,5 +41,5 @@ urlpatterns = [
     path('storage/unit/adjust/', StoragePositionAdjust.as_view(), name='admin_storage_adjust'),
     path('storage/unit/remove/', RemoveStorageUnit.as_view(), name='admin_storage_unit_remove'),
     path('users/all', GetAllUsers.as_view(), name='admin_users_all'),
-    path('editableImages/', GetEditableImage.as_view(), name='admin_editable_images'),
+    path('editableImages/', EditableImages.as_view(), name='admin_editable_images'),
 ]
