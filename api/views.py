@@ -266,7 +266,7 @@ class GetCatalog(APIView):
             d['photos'].sort(key=lambda x: x['id'])
 
         if page != -1:
-            return Response(data={"page": page, "pages": total_pages, "catalog": data, "filters": filter_tags},
+            return Response(data={"page": page, "pages": total_pages, "total": len(catalog), "catalog": data, "filters": filter_tags},
                             status=status.HTTP_200_OK)
         else:
             return Response(data, status=status.HTTP_200_OK)
