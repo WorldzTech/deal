@@ -4,12 +4,13 @@ import string
 
 from django.contrib.auth import get_user_model
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from chats.models import Chat
-from core.models import ProductPhoto, ProductTag, Product, SupportRequest, ProductTagGroup, Order
+from core.models import ProductPhoto, ProductTag, Product, SupportRequest, ProductTagGroup, Order, EditableImage
 from core.forms import EditProductForm
 from core.serializer import SupportRequestSerializer, DetailedSupportRequestSerializer, OrderSerializer
 from storage.models import StorageUnit
@@ -478,3 +479,15 @@ class MoveProductPhoto(APIView):
                 photo.save()
 
         return Response(status=status.HTTP_200_OK)
+
+
+class EditableImages(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        eis = EditableImage.objects.all()
+
+        data = [{"label": x.label, "url": x.url} for x in eis]
+
+        return Response(data, status=status.HTTP_200_OK)
