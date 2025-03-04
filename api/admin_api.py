@@ -491,3 +491,16 @@ class EditableImages(APIView):
         data = [{"id": x.id, "label": x.label, "url": x.get_url()} for x in eis]
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+    def post(self, request):
+        eid = request.data["eid"]
+        if not eid:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        eis: EditableImage = EditableImage.objects.filter(id=eid).first()
+        if not eis:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        print(request.data)
+        print(request.data["newImage"])
