@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
+from django.utils import timezone
 
 
 # Create your models here.
@@ -62,6 +63,8 @@ class DealUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
 
     favorites = models.ManyToManyField('core.Product', blank=True, null=True)
+
+    joined_at = models.DateTimeField(auto_now_add=True, default=timezone.now)
 
     USERNAME_FIELD = 'mobilePhone'
     REQUIRED_FIELDS = []
