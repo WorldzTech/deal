@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from core.models import Product, ProductTag, ProductShowcase, OrderInvoice
+from core.models import Product, ProductTag, ProductShowcase, OrderInvoice, EditableImage
 
 from core.serializer import *
 from storage.models import StorageUnit
@@ -439,3 +439,18 @@ class PaymentsNotify(APIView):
         invoice.apply_invoice()
 
         return Response(status=status.HTTP_200_OK)
+
+
+class GetEditableImage(APIView):
+    def get(self, request):
+        ei_id = request.GET.get('eid', None)
+
+        if ei_id:
+            ei: EditableImage = EditableImage.objects.filter(id=ei_id).first()
+
+            if ei:
+                return Response({"url": ei.get_url()}, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

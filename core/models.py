@@ -216,3 +216,10 @@ class OrderInvoice(models.Model):
         res = resp.json()
 
         return res['invoice_url']
+
+class EditableImage(models.Model):
+    label = models.CharField(max_length=255)
+    image = models.ImageField(upload_to="images/")
+
+    def get_url(self):
+        return self.image.url
