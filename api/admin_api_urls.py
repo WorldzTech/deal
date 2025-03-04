@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls.static import static
+
+from .users_api import GetAllUsers
 from .views import *
 from .users_views import *
 from .admin_api import *
@@ -38,4 +40,5 @@ urlpatterns = [
     path('storage/details/', StorageUnitDetailsEndpoint.as_view(), name='admin_storage_details'),
     path('storage/unit/adjust/', StoragePositionAdjust.as_view(), name='admin_storage_adjust'),
     path('storage/unit/remove/', RemoveStorageUnit.as_view(), name='admin_storage_unit_remove'),
+    path('/users/all', GetAllUsers.as_view(), name='admin_users_all'),
 ]

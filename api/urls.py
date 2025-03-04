@@ -58,5 +58,6 @@ urlpatterns = [
          name='token_refresh'),
     path('', include('chats.chat_api_urls')),
     path('admin/', include('api.admin_api_urls'), name='admin_api'),
-    path('utils/remdup/', remdup.as_view(), name='rem_dup')
+    path('utils/remdup/', remdup.as_view(), name='rem_dup'),
+
 ]
