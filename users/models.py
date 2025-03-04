@@ -64,7 +64,7 @@ class DealUser(AbstractBaseUser, PermissionsMixin):
 
     favorites = models.ManyToManyField('core.Product', blank=True, null=True)
 
-    joined_at = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    joined_at = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'mobilePhone'
     REQUIRED_FIELDS = []
