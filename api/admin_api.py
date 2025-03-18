@@ -284,7 +284,7 @@ class StorageEndpoint(APIView):
 
         data = {}
         fc = Product.objects.all()
-        total_pages = len(fc)
+        total_pages = int(math.ceil(len(fc) / pagination_size))
 
         catalog = fc[page*pagination_size:(page+1)*pagination_size]
 
