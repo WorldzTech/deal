@@ -289,7 +289,7 @@ class StorageEndpoint(APIView):
         catalog = fc[page*pagination_size:(page+1)*pagination_size]
 
         for product in catalog:
-            if product.product.item not in data.keys():
+            if product.item not in data.keys():
                 data[product.item] = {
                     'title': product.title,
                     'sizes': [],
