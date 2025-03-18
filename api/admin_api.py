@@ -277,7 +277,7 @@ class StorageEndpoint(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        page = request.GET.get('page', 1)
+        page = int(request.GET.get('page', 1))
         pagination_size = 20
         if not request.user.is_staff:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
