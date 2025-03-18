@@ -1,4 +1,5 @@
 import logging
+import math
 import random
 import string
 
@@ -282,8 +283,10 @@ class StorageEndpoint(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         data = {}
+        fc = StorageUnit.objects.all()
+        total_pages = int(math.ceil(len(fc) / pagination_size))
 
-        catalog = StorageUnit.objects.all()[page*pagination_size:(page+1)*pagination_size]
+        catalog = fc[page*pagination_size:(page+1)*pagination_size]
 
         for storageUnit in catalog:
             if storageUnit.product.item not in data.keys():
@@ -294,7 +297,7 @@ class StorageEndpoint(APIView):
 
             data[storageUnit.product.item]['sizes'].append(storageUnit.size)
 
-        return Response(data)
+        return Response({'page': page, "total_pages": total_pages, 'data': data})
 
     def post(self, request):
         if not request.user.is_staff:
