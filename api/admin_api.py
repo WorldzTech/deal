@@ -296,6 +296,7 @@ class StorageEndpoint(APIView):
                 }
 
             storage_units = StorageUnit.objects.filter(product=product)
+            print(f'{product.title} - {len(storage_units)} sizes')
 
             for storage_unit in storage_units:
                 data[product.item]['sizes'].append(storage_unit.size)
