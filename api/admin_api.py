@@ -276,12 +276,16 @@ class StorageEndpoint(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
+        page = request.GET.get('page', 1)
+        pagination_size = 20
         if not request.user.is_staff:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         data = {}
 
-        for storageUnit in StorageUnit.objects.all():
+        catalog = StorageUnit.objects.all()[page*pagination_size:(page+1)*pagination_size]
+
+        for storageUnit in catalog:
             if storageUnit.product.item not in data.keys():
                 data[storageUnit.product.item] = {
                     'title': storageUnit.product.title,
