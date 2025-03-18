@@ -283,19 +283,22 @@ class StorageEndpoint(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         data = {}
-        fc = StorageUnit.objects.all()
+        fc = Product.objects.all()
         total_pages = len(fc)
 
         catalog = fc[page*pagination_size:(page+1)*pagination_size]
 
-        for storageUnit in catalog:
-            if storageUnit.product.item not in data.keys():
-                data[storageUnit.product.item] = {
-                    'title': storageUnit.product.title,
+        for product in catalog:
+            if product.product.item not in data.keys():
+                data[product.item] = {
+                    'title': product.title,
                     'sizes': [],
                 }
 
-            data[storageUnit.product.item]['sizes'].append(storageUnit.size)
+            storage_units = StorageUnit.objects.get(product=product)
+
+            for storage_unit in storage_units:
+                data[product.item]['sizes'].append(storage_unit.size)
 
         return Response({'page': page, "total_pages": total_pages, 'data': data})
 
