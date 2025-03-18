@@ -295,7 +295,7 @@ class StorageEndpoint(APIView):
                     'sizes': [],
                 }
 
-            storage_units = StorageUnit.objects.get(product=product)
+            storage_units = StorageUnit.objects.filter(product=product)
 
             for storage_unit in storage_units:
                 data[product.item]['sizes'].append(storage_unit.size)
