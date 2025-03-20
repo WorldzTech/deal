@@ -60,4 +60,5 @@ urlpatterns = [
     path('admin/', include('api.admin_api_urls'), name='admin_api'),
     path('utils/remdup/', remdup.as_view(), name='rem_dup'),
     path('utils/editableImage/', GetEditableImage.as_view(), name='editableImage'),
+    path('news/subscribe/', NewsSubscribe.as_view(), name='news_subscribe'),
 ]

@@ -56,3 +56,5 @@ LOGGING = {
         },
     }
 }
+
+MAILSEND_TOKEN = 'mlsn.0f0292f7489c03183bd6e3e11abac2bb3be237a88eabb92f39ac6a62066a4c1d'
