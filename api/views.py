@@ -477,7 +477,7 @@ class NewsSubscribe(APIView):
             recipients = [
                 {
                     "name": "Deal Admin",
-                    "email": "felix.trof@gmail.com",
+                    "email": "deal-fashion@mail.ru",
                 }
             ]
 
